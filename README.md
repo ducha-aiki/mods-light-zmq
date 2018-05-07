@@ -137,12 +137,14 @@ Extracted features will be in output_features directory, in [OxAff-like](http://
 It is simple python(might be any other language) script with following three main parts.
 See [desc_server.py](build/desc_server.py) for example.
 
-1) zeromq socket initialization: 
-    
-    context = zmq.Context()
-    socket = context.socket(zmq.REP)
-    socket.bind("tcp://*:" + args.port)
-    
+1)zeromq socket initialization: 
+
+
+      context = zmq.Context()
+      socket = context.socket(zmq.REP)
+      socket.bind("tcp://*:" + args.port)
+
+
 port number should be the same, as listening port in corresponding section of [config_aff_ori_desc_zeromq.ini](build/config_aff_ori_desc_zeromq.ini) file:
 
     [zmqDescriptor]
@@ -152,16 +154,19 @@ port number should be the same, as listening port in corresponding section of [c
 
 2)Waiting for input patches. Patches come as grayscale uint8 png image with size (ps * n_patches, ps), where ps is set in [config_aff_ori_desc_zeromq.ini](build/config_aff_ori_desc_zeromq.ini)
 
+
     while True:
         #  Wait for next request from client
         message = socket.recv()
         img = decode_msg(message).astype(np.float32)
 
-3) Getting descriptors and sending them back, as numpy float32 (num_patches,desc_dim) array.
-    
-    descr = describe_patches(model, img, args.cuda, DESCR_OUT_DIM).astype(np.float32)
-    buff = np.getbuffer(descr)
-    socket.send(buff)
+3)Getting descriptors and sending them back, as numpy float32 (num_patches,desc_dim) array.
+
+
+     descr = describe_patches(model, img, args.cuda, DESCR_OUT_DIM).astype(np.float32)
+     buff = np.getbuffer(descr)
+     socket.send(buff)
+
 
 ## Citation
 
