@@ -46,6 +46,7 @@ public:
                                           const int width2, const int height2);
   cv::Mat OriginalImg;
   void SaveRegions(std::string fname, int mode);
+  void SaveRegionsAMatrix(std::string fname);
   void SaveRegionsMichal(std::string fname, int mode);
   void SaveRegionsBenchmark(std::string fname1, std::string fname2);
   void SaveDescriptorsBenchmark(std::string fname1);

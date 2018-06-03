@@ -138,10 +138,14 @@ int main(int argc, char **argv)
       /// Writing images and logs
       std::cerr << "Writing files... " << endl;
 
+
+
+
       if (Config1.OutputParam.outputMikFormat) {
           ImgRep1.SaveRegionsMichal(out_fname, 123);
         }  else {
-          ImgRep1.SaveRegions(out_fname,0);
+
+          ImgRep1.SaveRegionsAMatrix(out_fname);
         }
     }
   return 0;

@@ -112,7 +112,7 @@ int main(int argc, char **argv)
       ImgRep1.SaveRegionsMichal(Config1.CLIparams.k1_fname, 123);
 
     }  else {
-      ImgRep1.SaveRegions(Config1.CLIparams.k1_fname,0);
+      ImgRep1.SaveRegionsAMatrix(Config1.CLIparams.k1_fname);
     }
   return 0;
 }

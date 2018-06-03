@@ -714,6 +714,7 @@ int getCLIparam(configs &conf1,int argc, char **argv)
 
 void GetDomOriPars(DominantOrientationParams &DomOriPars, INIReader &reader, char const *section) {
   DomOriPars.addUpRight = reader.GetBoolean(section, "addUpRight", DomOriPars.addUpRight);
+  DomOriPars.addMirrored = reader.GetBoolean(section, "addMirrored", DomOriPars.addMirrored);
   DomOriPars.halfSIFTMode = reader.GetBoolean(section, "halfSIFTMode", DomOriPars.halfSIFTMode);
   DomOriPars.useZMQ = reader.GetBoolean(section, "useZMQ", DomOriPars.useZMQ);
   DomOriPars.maxAngles = (int)reader.GetInteger(section, "maxAngles", DomOriPars.maxAngles);

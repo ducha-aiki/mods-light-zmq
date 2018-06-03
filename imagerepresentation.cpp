@@ -21,11 +21,11 @@ std::vector<std::vector<float> > DescribeWithZmq(zmqDescriptorParams par,
   int odd_patch_size = par.patchSize ;
   if (kps.size() > 0){
       ExtractPatchesColumn(kps,temp_img1, patches,
-                         par.mrSize,
-                         odd_patch_size,
-                         false,
-                         false,
-                         true);
+                           par.mrSize,
+                           odd_patch_size,
+                           false,
+                           false,
+                           true);
     }
 
   std::vector<uchar> bufff1;
@@ -49,7 +49,7 @@ std::vector<std::vector<float> > DescribeWithZmq(zmqDescriptorParams par,
   std::vector<float> inMsg(cnn_to_mods.size() / sizeof(float));
   std::memcpy(inMsg.data(), cnn_to_mods.data(), cnn_to_mods.size());
   const int desc_size = inMsg.size() /kps.size() ;
- 
+
   for (int img_num=0; img_num<kps.size(); img_num++)
     {
       std::vector<float> curr_desc(desc_size);
@@ -86,6 +86,13 @@ void saveKP_KM_format(AffineKeypoint &ak, std::ostream &s) {
   A = svd.u * Mat::diag(svd.w) * svd.u.t();
   s << ak.x << " " << ak.y << " " << A.at<float>(0,0) << " " << A.at<float>(0,1) << " " << A.at<float>(1,1) << " ";
 }
+
+
+void saveARAMatrix(AffineKeypoint &ak, std::ostream &s) {
+  double sc = ak.s * sqrt(fabs(ak.a11*ak.a22 - ak.a12*ak.a21))*3.0*sqrt(3.0);
+  s << ak.x << " " << ak.y << " " << sc << " "  << ak.a11 << " " << ak.a12 << " "  << ak.a21 << " " << ak.a22 << " ";
+}
+
 
 void saveKPMichal(AffineKeypoint &ak, std::ostream &s) {
   ak.s *= sqrt(fabs(ak.a11*ak.a22 - ak.a12*ak.a21))*3.0*sqrt(3.0);
@@ -874,16 +881,18 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                                     dom_ori_par.PEParam.mrSize, dom_ori_par.PEParam.patchSize,
                                     false, 0, 1.0, true);
                 }
+
             }
           temp_kp_map["None"] = temp_kp1;
 
           for (unsigned int i_desc=0; i_desc < synth_par[curr_det][synth].descriptors.size();i_desc++) {
               std::string curr_desc = synth_par[curr_det][synth].descriptors[i_desc];
               AffineRegionVector temp_kp1_desc;
-              AffineRegionVector dsp_desc;
+           //   AffineRegionVector dsp_desc;
               if (dom_ori_par.addUpRight) {
                   temp_kp1_desc.insert(temp_kp1_desc.end(), temp_kp1_upright.begin(), temp_kp1_upright.end());
                 }
+
               //             ReprojectRegions(temp_kp1_desc, temp_img1.H, OriginalImg.cols, OriginalImg.rows);
               if (curr_det.compare("ReadAffs") == 0) {
 
@@ -904,6 +913,23 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                   if (!SIFT_like_desc) {
                       temp_kp1_desc.insert(temp_kp1_desc.end(), temp_kp1.begin(),
                                            temp_kp1.end());
+                    }
+                  if (dom_ori_par.addMirrored) {
+                      AffineRegionVector kps_with_mirror;
+                      AffineRegion temp_region,  const_temp_region;
+                      kps_with_mirror.reserve(temp_kp1_desc.size());
+                      for (int kp_idx = 0; kp_idx < temp_kp1_desc.size(); kp_idx ++) {
+                          const_temp_region=temp_kp1_desc[kp_idx];
+                          temp_region=const_temp_region;
+                          temp_region.det_kp.a11 = -const_temp_region.det_kp.a11;
+                          temp_region.det_kp.a12 = -const_temp_region.det_kp.a12;
+                          temp_region.det_kp.a21 = -const_temp_region.det_kp.a21;
+                          temp_region.det_kp.a22 = -const_temp_region.det_kp.a22;
+                          kps_with_mirror.push_back(temp_region);
+                        }
+
+                      temp_kp1_desc.insert(temp_kp1_desc.end(), kps_with_mirror.begin(),
+                                           kps_with_mirror.end());
                     }
                   ReprojectRegions(temp_kp1_desc, temp_img1.H, OriginalImg.cols, OriginalImg.rows);
                 }
@@ -976,11 +1002,11 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                   cv::Mat patches;
                   if (temp_kp1_desc.size() > 0){
                       ExtractPatchesColumn(temp_kp1_desc,temp_img1,patches,
-                                         desc_par.CLIDescParam.PEParam.mrSize,
-                                         desc_par.CLIDescParam.PEParam.patchSize,
-                                         desc_par.CLIDescParam.PEParam.FastPatchExtraction,
-                                         desc_par.CLIDescParam.PEParam.photoNorm,
-                                         true);
+                                           desc_par.CLIDescParam.PEParam.mrSize,
+                                           desc_par.CLIDescParam.PEParam.patchSize,
+                                           desc_par.CLIDescParam.PEParam.FastPatchExtraction,
+                                           desc_par.CLIDescParam.PEParam.photoNorm,
+                                           true);
                     }
                   std::cerr << patches.rows << " " <<   patches.cols << std::endl;
                   if (patches.cols > 0) {
@@ -1059,6 +1085,56 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
         }
     }
 }
+void ImageRepresentation::SaveRegionsAMatrix(std::string fname) {
+  std::vector<std::string> desc_names;
+  for (std::map<std::string, AffineRegionVectorMap>::const_iterator
+       reg_it = RegionVectorMap.begin(); reg_it != RegionVectorMap.end();  ++reg_it) {
+      for (AffineRegionVectorMap::const_iterator desc_it = reg_it->second.begin();
+           desc_it != reg_it->second.end(); ++desc_it) {
+          if (desc_it->first == "None") {
+              continue;
+            }
+          desc_names.push_back(desc_it->first);
+        }
+    }
+  for (unsigned int desc_num = 0; desc_num < desc_names.size(); desc_num++) {
+      std::string current_desc_name = desc_names[desc_num];
+      std::ofstream kpfile(fname + current_desc_name);
+      if (kpfile.is_open()) {
+          int num_keys = GetDescriptorsNumber(current_desc_name);
+          //    kpfile << "128" << std::endl;
+          //    kpfile << num_keys << std::endl;
+          if (num_keys == 0)
+            {
+              std::cerr << "No keypoints detected" << std::endl;
+              kpfile.close();
+              continue;
+            }
+          int desc_dim;
+          for (std::map<std::string, AffineRegionVectorMap>::const_iterator
+               reg_it = RegionVectorMap.begin(); reg_it != RegionVectorMap.end(); ++reg_it) {
+              for (AffineRegionVectorMap::const_iterator desc_it = reg_it->second.begin();
+                   desc_it != reg_it->second.end(); ++desc_it) {
+                  if (desc_it->first != current_desc_name) {
+                      continue;
+                    }
+                  int n_desc = desc_it->second.size();
+
+                  for (int i = 0; i < n_desc; i++) {
+                      AffineRegion ar = desc_it->second[i];
+                      saveARAMatrix(ar.reproj_kp, kpfile);
+                      for (unsigned int i = 0; i < ar.desc.vec.size(); ++i) {
+                          kpfile << ar.desc.vec[i] << " ";
+                        }
+                      kpfile << std::endl;
+
+                    }
+                }
+            }
+        }
+
+    }
+}
 void ImageRepresentation::SaveRegionsMichal(std::string fname, int mode) {
   std::vector<std::string> desc_names;
   for (std::map<std::string, AffineRegionVectorMap>::const_iterator
@@ -1076,11 +1152,11 @@ void ImageRepresentation::SaveRegionsMichal(std::string fname, int mode) {
       std::ofstream kpfile(fname + current_desc_name);
       if (mode == ios::binary) {
           if (kpfile.is_open()) {
-           //   int magic = '\1ffa';
-           //   kpfile.write((char *) &magic, sizeof(int));
+              //   int magic = '\1ffa';
+              //   kpfile.write((char *) &magic, sizeof(int));
 
               int num_keys = GetDescriptorsNumber(current_desc_name);
-            //  kpfile.write((char *) &num_keys, sizeof(int));
+              //  kpfile.write((char *) &num_keys, sizeof(int));
               if (num_keys == 0)
                 {
                   std::cerr << "No keypoints detected" << std::endl;
@@ -1107,13 +1183,13 @@ void ImageRepresentation::SaveRegionsMichal(std::string fname, int mode) {
                   kpfile.close();
                   continue;
                 }
-            //  kpfile.write((char *) &desc_dim, sizeof(int));
+              //  kpfile.write((char *) &desc_dim, sizeof(int));
               //  std::cerr << desc_dim << std::endl;
-//              int img_w = OriginalImg.cols;
-  //            kpfile.write((char *) &img_w, sizeof(int));
+              //              int img_w = OriginalImg.cols;
+              //            kpfile.write((char *) &img_w, sizeof(int));
               // std::cerr << img_w << std::endl;
-    //          int img_h = OriginalImg.rows;
-      //        kpfile.write((char *) &img_h, sizeof(int));
+              //          int img_h = OriginalImg.rows;
+              //        kpfile.write((char *) &img_h, sizeof(int));
               // std::cerr << img_h << std::endl;
 
               for (std::map<std::string, AffineRegionVectorMap>::const_iterator

@@ -11,6 +11,7 @@ struct DominantOrientationParams {
   bool addUpRight;
   bool halfSIFTMode;
   bool useZMQ;
+  bool addMirrored;
   std::string  external_command;
   PatchExtractionParams PEParam;
   DominantOrientationParams() {
@@ -19,6 +20,7 @@ struct DominantOrientationParams {
     addUpRight = false;
     halfSIFTMode = false;
     useZMQ = false;
+    addMirrored = false;
     external_command = "";
   }
 };
