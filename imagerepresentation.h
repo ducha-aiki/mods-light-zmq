@@ -45,6 +45,7 @@ public:
                                           DominantOrientationParams &dom_ori_par, double* H,
                                           const int width2, const int height2);
   cv::Mat OriginalImg;
+  cv::Mat mask;
   void SaveRegions(std::string fname, int mode);
   void SaveRegionsAMatrix(std::string fname);
   void SaveRegionsMichal(std::string fname, int mode);

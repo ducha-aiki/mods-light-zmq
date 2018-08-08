@@ -242,6 +242,21 @@ void GetHarrPars(ScaleSpaceDetectorParams &HarrPars, INIReader &reader,const cha
     HarrPars.PyramidPars.DetectorMode = FIXED_TH;
 
 }
+
+void GetORBPars(ORBParams &pars, INIReader &reader,const char* section)
+{
+  pars.edgeThreshold = reader.GetInteger(section, "edgeThreshold", pars.edgeThreshold);
+  pars.firstLevel= reader.GetInteger(section, "firstLevel", pars.firstLevel);
+  pars.nfeatures = reader.GetInteger(section, "nfeatures", pars.nfeatures);
+  pars.nlevels = reader.GetInteger(section, "nlevels", pars.nlevels);
+  pars.scaleFactor = reader.GetDouble(section, "scaleFactor", pars.scaleFactor);
+  pars.WTA_K = reader.GetInteger(section, "WTA_K", pars.WTA_K);
+  GetPatchExtractionPars(pars.PEParam,reader,section);
+  pars.doBaumberg = reader.GetBoolean(section,"doBaumberg",pars.doBaumberg);
+  pars.doNMS = reader.GetInteger(section,"doNMS",pars.doNMS);
+
+}
+
 void GetDoGPars(ScaleSpaceDetectorParams &DoGPars, INIReader &reader,const char* section)
 {
   DoGPars.PyramidPars.DetectorType = DET_DOG;
@@ -495,7 +510,8 @@ int getCLIparamExtractFeatures(configs &conf1,int argc, char **argv)
       std::cerr << "Can't load  "<< conf1.CLIparams.iters_fname << std::endl;
       return 1;
     }
-  GetDoGPars(conf1.DetectorsPars.DoGParam,ConfigIni);
+  GetDoGPars(conf1.DetectorsPars.DoGParam,ConfigIni);GetORBPars(conf1.DetectorsPars.ORBParam,ConfigIni);
+
   GetHessPars(conf1.DetectorsPars.HessParam,ConfigIni);
   GetDomOriPars(conf1.DomOriPars,ConfigIni);
   GetHarrPars(conf1.DetectorsPars.HarrParam,ConfigIni);
@@ -598,7 +614,7 @@ int getCLIparam(configs &conf1,int argc, char **argv)
       std::cerr << "Can't load  "<< conf1.CLIparams.iters_fname << std::endl;
       return 1;
     }
-  GetDoGPars(conf1.DetectorsPars.DoGParam,ConfigIni);
+  GetDoGPars(conf1.DetectorsPars.DoGParam,ConfigIni);GetORBPars(conf1.DetectorsPars.ORBParam,ConfigIni);
   GetHessPars(conf1.DetectorsPars.HessParam,ConfigIni);
   GetDomOriPars(conf1.DomOriPars,ConfigIni);
   GetHarrPars(conf1.DetectorsPars.HarrParam,ConfigIni);

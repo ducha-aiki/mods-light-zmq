@@ -18,12 +18,13 @@ enum detector_type {DET_HESSIAN = 0,
                     DET_HARRIS = 2,
                     DET_MSER = 3,
                     DET_READ = 4,
+                    DET_ORB = 5,
                     DET_UNKNOWN = 1000};
 
 
 const std::string _DetectorNames [] = {"HessianAffine", "DoG",
                                        "HarrisAffine", "MSER",
-                                       "ReadAffs", "Unknown"};
+                                       "ReadAffs", "ORB", "Unknown"};
 
 
 const std::vector<std::string> DetectorNames (_DetectorNames,_DetectorNames +
@@ -61,12 +62,13 @@ enum descriptor_type {DESC_SIFT = 0,
                       DESC_INV_SIFT = 4,
                       DESC_ZMQ = 6,
                       DESC_CLI = 7,
+                      DESC_ORB = 8,
                       DESC_UNKNOWN = 1000};
 
 
 const std::string _DescriptorNames [] = {"SIFT", "RootSIFT",
                                      "HalfSIFT", "HalfRootSIFT",
-                                     "InvSIFT", "ZMQ",  "CLIDescriptor"};
+                                     "InvSIFT", "ZMQ",  "CLIDescriptor", "ORB"};
 
 const std::vector<std::string> DescriptorNames (_DescriptorNames,_DescriptorNames +
                                               sizeof(_DescriptorNames)/sizeof(*_DescriptorNames));

@@ -49,6 +49,7 @@ void GetMSERPars(extrema::ExtremaParams &MSERPars, INIReader &reader,const char*
 void GetCLIDescPars(CLIDescriptorParams &pars, INIReader &reader,const char* section = "CLIDescriptor");
 void GetReadPars(ReadAffsFromFileParams &pars, INIReader &reader,const char* section="ReadAffs");
 void GetHessPars(ScaleSpaceDetectorParams &HessPars, INIReader &reader,const char* section="HessianAffine");
+void GetORBPars(ORBParams &pars, INIReader &reader,const char* section="ORB");
 void GetPatchExtractionPars(PatchExtractionParams &PEPars, INIReader &reader,const char* section);
 void GetHarrPars(ScaleSpaceDetectorParams &HarrPars, INIReader &reader,const char* section="HarrisAffine");
 void GetDoGPars(ScaleSpaceDetectorParams &DoGPars, INIReader &reader,const char* section="DoG");
