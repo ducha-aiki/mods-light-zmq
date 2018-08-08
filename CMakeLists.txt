@@ -96,6 +96,10 @@ TARGET_LINK_LIBRARIES(synth-detection matching mser affinedetectors helpers ${Op
 add_executable(mods  mods.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
 TARGET_LINK_LIBRARIES(mods inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq)
 
+add_executable(mods-with-mask  mods-with-mask.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
+TARGET_LINK_LIBRARIES(mods-with-mask inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq)
+
+
 add_executable(extract_features extract_features.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
 TARGET_LINK_LIBRARIES(extract_features inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq)
 

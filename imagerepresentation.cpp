@@ -933,7 +933,17 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                     }
                   ReprojectRegions(temp_kp1_desc, temp_img1.H, OriginalImg.cols, OriginalImg.rows);
                 }
-
+              if (mask.cols == OriginalImg.cols) {
+                  std::cout << "Mask filtering" << std::endl;
+                  AffineRegionVector temp_kp1_filtered;
+                  for (int kp_id = 0; kp_id < temp_kp1_desc.size(); kp_id++){
+                      if (mask.at<unsigned char>(int(temp_kp1_desc[kp_id].reproj_kp.y),int(temp_kp1_desc[kp_id].reproj_kp.x)) > 0) {
+                          temp_kp1_filtered.push_back(temp_kp1_desc[kp_id]);
+                        }
+                    }
+                  std::cout << temp_kp1_filtered.size() << " out of " << temp_kp1_desc.size() << " left" << std::endl;
+                  temp_kp1_desc = temp_kp1_filtered;
+                }
               ///Description
               ///
               time1 = ((double) (getMilliSecs1() - s_time)) / 1000;
