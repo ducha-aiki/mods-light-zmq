@@ -167,6 +167,14 @@ port number should be the same, as listening port in corresponding section of [c
      buff = np.getbuffer(descr)
      socket.send(buff)
 
+## Saving in .npz format
+Now you can save keypoints in .npz format. To do this, just pass k1.npz instead k1.txt in command line.
+It will create .npz file with keys "xy", "responses", "scales", "A", "descs". 
+
+https://github.com/ducha-aiki/mods-light-zmq/blob/master/imagerepresentation.cpp#L1266
+
+Powered by great library https://github.com/rogersce/cnpy/
+
 
 ## Citation
 
