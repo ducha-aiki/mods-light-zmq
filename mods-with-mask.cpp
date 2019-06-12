@@ -164,7 +164,7 @@ int main(int argc, char **argv)
 
       clahe->apply(gray_in_img,img1_clahe);
       ImgRep1 = ImageRepresentation(img1_clahe,Config1.CLIparams.img1_fname);
-      ImgRep1.mask = img1_mask;
+//      ImgRep1.mask = img1_mask;
 
       if (img1.channels() == 3)
         {
@@ -187,15 +187,15 @@ int main(int argc, char **argv)
       if (VERB) std::cerr << " CLAHE done in "  << time2<< " seconds" << endl;
 
       ImgRep2 = ImageRepresentation(img2_clahe,Config1.CLIparams.img2_fname);
-      ImgRep2.mask = img2_mask;
+    //  ImgRep2.mask = img2_mask;
 
     }
   else
     {
       ImgRep1 = ImageRepresentation(img1,Config1.CLIparams.img1_fname);
       ImgRep2 = ImageRepresentation(img2,Config1.CLIparams.img2_fname);
-      ImgRep1.mask = img1_mask;
-      ImgRep2.mask = img2_mask;
+ //     ImgRep1.mask = img1_mask;
+  //    ImgRep2.mask = img2_mask;
     }
 
   CorrespondenceBank Tentatives;

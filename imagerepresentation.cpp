@@ -3,7 +3,7 @@
 #include "detectors/mser/extrema/extrema.h"
 #include <fstream>
 #include <opencv2/features2d/features2d.hpp>
-
+#include "cnpy/cnpy.h"
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -86,13 +86,6 @@ void saveKP_KM_format(AffineKeypoint &ak, std::ostream &s) {
   A = svd.u * Mat::diag(svd.w) * svd.u.t();
   s << ak.x << " " << ak.y << " " << A.at<float>(0,0) << " " << A.at<float>(0,1) << " " << A.at<float>(1,1) << " ";
 }
-
-
-void saveARAMatrix(AffineKeypoint &ak, std::ostream &s) {
-  double sc = ak.s * sqrt(fabs(ak.a11*ak.a22 - ak.a12*ak.a21))*3.0*sqrt(3.0);
-  s << ak.x << " " << ak.y << " " << sc << " "  << ak.a11 << " " << ak.a12 << " "  << ak.a21 << " " << ak.a22 << " ";
-}
-
 
 void saveKPMichal(AffineKeypoint &ak, std::ostream &s) {
   ak.s *= sqrt(fabs(ak.a11*ak.a22 - ak.a12*ak.a21))*3.0*sqrt(3.0);
@@ -693,18 +686,6 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
           bool SIFT_like_desc = true;
           bool HalfSIFT_like_desc = false;
 
-          cv::Mat CharImage; //for OpenCV detectors
-
-          std::vector<cv::KeyPoint> keypoints_1; //for binary-dets
-          cv::Mat descriptors_1; //for binary-dets
-
-          bool OpenCV_det = ((curr_det.compare("ORB") == 0) ||
-                             (curr_det.compare("FAST") == 0) ||
-                             (curr_det.compare("STAR") == 0) ||
-                             (curr_det.compare("KAZE") == 0) ||
-                             (curr_det.compare("BRISK") == 0) ||
-                             (curr_det.compare("Saddle") == 0));
-
           for (unsigned int i_desc=0; i_desc < synth_par[curr_det][synth].descriptors.size();i_desc++) {
               std::string curr_desc = synth_par[curr_det][synth].descriptors[i_desc];
               if (curr_desc.find("Half") != std::string::npos) {
@@ -757,38 +738,7 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
             {
               DetectAffineRegions(temp_img1, temp_kp1,det_par.MSERParam,DET_MSER,DetectMSERs);
             }
-          else if (curr_det.compare("ORB")==0)
-            {
-              OpenCV_det = true;
-              doExternalAffineAdaptation = det_par.ORBParam.doBaumberg;
-              //cv::OrbFeatureDetector CurrentDetector(det_par.ORBParam.nfeatures,
-              cv::ORB CurrentDetector(det_par.ORBParam.nfeatures,
-                                                     det_par.ORBParam.scaleFactor,
-                                                     det_par.ORBParam.nlevels,
-                                                     det_par.ORBParam.edgeThreshold,
-                                                     det_par.ORBParam.firstLevel,
-                                                     det_par.ORBParam.WTA_K,
-                                                     ORB::HARRIS_SCORE,
-                                                     det_par.ORBParam.PEParam.patchSize);//,
-                                               //      det_par.ORBParam.doNMS);
-              temp_img1.pixels.convertTo(CharImage,CV_8U);
-              CurrentDetector.detect(CharImage, keypoints_1);
-              int kp_size = keypoints_1.size();
-              temp_kp1.resize(kp_size);
 
-              for (int kp_num=0; kp_num<kp_size; kp_num++)
-                {
-                  temp_kp1[kp_num].det_kp.x = keypoints_1[kp_num].pt.x;
-                  temp_kp1[kp_num].det_kp.y = keypoints_1[kp_num].pt.y;
-                  temp_kp1[kp_num].det_kp.a11 = cos(keypoints_1[kp_num].angle*M_PI/180.0);
-                  temp_kp1[kp_num].det_kp.a12 = sin(keypoints_1[kp_num].angle*M_PI/180.0);
-                  temp_kp1[kp_num].det_kp.a21 = -sin(keypoints_1[kp_num].angle*M_PI/180.0);
-                  temp_kp1[kp_num].det_kp.a22 = cos(keypoints_1[kp_num].angle*M_PI/180.0);
-                  temp_kp1[kp_num].det_kp.s = keypoints_1[kp_num].size  /  det_par.ORBParam.PEParam.mrSize;
-                  temp_kp1[kp_num].det_kp.response = keypoints_1[kp_num].response;
-                  temp_kp1[kp_num].type = DET_ORB;
-                }
-            }
           //Baumberg iteration
           if (doExternalAffineAdaptation) {
               AffineRegionVector temp_kp_aff;
@@ -924,18 +874,16 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                                     dom_ori_par.PEParam.mrSize, dom_ori_par.PEParam.patchSize,
                                     false, 0, 1.0, true);
                 }
-
             }
           temp_kp_map["None"] = temp_kp1;
 
           for (unsigned int i_desc=0; i_desc < synth_par[curr_det][synth].descriptors.size();i_desc++) {
               std::string curr_desc = synth_par[curr_det][synth].descriptors[i_desc];
               AffineRegionVector temp_kp1_desc;
-           //   AffineRegionVector dsp_desc;
+              AffineRegionVector dsp_desc;
               if (dom_ori_par.addUpRight) {
                   temp_kp1_desc.insert(temp_kp1_desc.end(), temp_kp1_upright.begin(), temp_kp1_upright.end());
                 }
-
               //             ReprojectRegions(temp_kp1_desc, temp_img1.H, OriginalImg.cols, OriginalImg.rows);
               if (curr_det.compare("ReadAffs") == 0) {
 
@@ -957,36 +905,9 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                       temp_kp1_desc.insert(temp_kp1_desc.end(), temp_kp1.begin(),
                                            temp_kp1.end());
                     }
-                  if (dom_ori_par.addMirrored) {
-                      AffineRegionVector kps_with_mirror;
-                      AffineRegion temp_region,  const_temp_region;
-                      kps_with_mirror.reserve(temp_kp1_desc.size());
-                      for (int kp_idx = 0; kp_idx < temp_kp1_desc.size(); kp_idx ++) {
-                          const_temp_region=temp_kp1_desc[kp_idx];
-                          temp_region=const_temp_region;
-                          temp_region.det_kp.a11 = -const_temp_region.det_kp.a11;
-                          temp_region.det_kp.a12 = -const_temp_region.det_kp.a12;
-                          temp_region.det_kp.a21 = -const_temp_region.det_kp.a21;
-                          temp_region.det_kp.a22 = -const_temp_region.det_kp.a22;
-                          kps_with_mirror.push_back(temp_region);
-                        }
-
-                      temp_kp1_desc.insert(temp_kp1_desc.end(), kps_with_mirror.begin(),
-                                           kps_with_mirror.end());
-                    }
                   ReprojectRegions(temp_kp1_desc, temp_img1.H, OriginalImg.cols, OriginalImg.rows);
                 }
-              if (mask.cols == OriginalImg.cols) {
-                  std::cout << "Mask filtering" << std::endl;
-                  AffineRegionVector temp_kp1_filtered;
-                  for (int kp_id = 0; kp_id < temp_kp1_desc.size(); kp_id++){
-                      if (mask.at<unsigned char>(int(temp_kp1_desc[kp_id].reproj_kp.y),int(temp_kp1_desc[kp_id].reproj_kp.x)) > 0) {
-                          temp_kp1_filtered.push_back(temp_kp1_desc[kp_id]);
-                        }
-                    }
-                  std::cout << temp_kp1_filtered.size() << " out of " << temp_kp1_desc.size() << " left" << std::endl;
-                  temp_kp1_desc = temp_kp1_filtered;
-                }
+
               ///Description
               ///
               time1 = ((double) (getMilliSecs1() - s_time)) / 1000;
@@ -1049,77 +970,6 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                                   desc_par.SIFTParam.PEParam.patchSize,
                                   desc_par.SIFTParam.PEParam.FastPatchExtraction,
                                   desc_par.SIFTParam.PEParam.photoNorm);
-                }
-              else if (curr_desc.compare("ORB") == 0) //ORB
-                {
-                  //                  else if (curr_desc.compare("ORB") == 0) //ORB (not uses orientation estimated points)
-                  //                    {
-                  std::cout << "ORB desc" << std::endl;
-                  const double mrSizeORB = 3.0;
-                  cv::OrbFeatureDetector CurrentDescriptor(det_par.ORBParam.nfeatures,
-                                                           det_par.ORBParam.scaleFactor,
-                                                           det_par.ORBParam.nlevels,
-                                                           det_par.ORBParam.edgeThreshold,
-                                                           det_par.ORBParam.firstLevel,
-                                                           det_par.ORBParam.WTA_K,
-                                                           ORB::HARRIS_SCORE,
-                                                           det_par.ORBParam.PEParam.patchSize);
-                  if (OpenCV_det) //no data conversion needed
-                    {
-
-                      if (curr_det == "ORB") {
-                          unsigned int kp_size = temp_kp1.size();
-                   //       keypoints_1.clear();
-                          keypoints_1.resize(kp_size);
-                          for (unsigned int kp_num = 0; kp_num < kp_size; kp_num++) {
-                              cv::KeyPoint temp_pt;
-                              temp_pt.pt.x = temp_kp1_desc[kp_num].det_kp.x;
-                              temp_pt.pt.y = temp_kp1_desc[kp_num].det_kp.y;
-                              temp_pt.angle = atan2( temp_kp1_desc[kp_num].det_kp.a12, temp_kp1_desc[kp_num].det_kp.a12);
-                              temp_pt.size = temp_kp1_desc[kp_num].det_kp.s *  det_par.ORBParam.PEParam.mrSize; //?mrSizeORB;
-                              keypoints_1[kp_num]=temp_pt;
-                            }
-                        }
-                      CurrentDescriptor.compute(CharImage, keypoints_1, descriptors_1);
-                    }
-                  else {
-                      unsigned int kp_size = temp_kp1.size();
-                      keypoints_1.reserve(kp_size);
-                      for (unsigned int kp_num = 0; kp_num < kp_size; kp_num++) {
-                          cv::KeyPoint temp_pt;
-                          temp_pt.pt.x = temp_kp1_desc[kp_num].det_kp.x;
-                          temp_pt.pt.y = temp_kp1_desc[kp_num].det_kp.y;
-                          temp_pt.angle = 0;
-                          temp_pt.size = temp_kp1_desc[kp_num].det_kp.s;
-                          keypoints_1.push_back(temp_pt);
-                        }
-                      temp_img1.pixels.convertTo(CharImage, CV_8U);
-                      CurrentDescriptor.compute(CharImage, keypoints_1, descriptors_1);
-                    }
-                  int kp_size = keypoints_1.size();
-                  int desc_size = descriptors_1.cols;
-
-                  temp_kp1_desc.resize(kp_size);
-
-                  for (int kp_num = 0; kp_num < kp_size; kp_num++) {
-                      temp_kp1_desc[kp_num].det_kp.x = keypoints_1[kp_num].pt.x;
-                      temp_kp1_desc[kp_num].det_kp.y = keypoints_1[kp_num].pt.y;
-                      temp_kp1_desc[kp_num].det_kp.a11 = cos(keypoints_1[kp_num].angle * M_PI / 180.0);
-                      temp_kp1_desc[kp_num].det_kp.a12 = sin(keypoints_1[kp_num].angle * M_PI / 180.0);
-                      temp_kp1_desc[kp_num].det_kp.a21 = -sin(keypoints_1[kp_num].angle * M_PI / 180.0);
-                      temp_kp1_desc[kp_num].det_kp.a22 = cos(keypoints_1[kp_num].angle * M_PI / 180.0);
-                      temp_kp1_desc[kp_num].det_kp.s = keypoints_1[kp_num].size /  det_par.ORBParam.PEParam.mrSize;
-                      temp_kp1_desc[kp_num].det_kp.response = keypoints_1[kp_num].response;
-                      temp_kp1_desc[kp_num].type = temp_kp1[0].type;
-                      temp_kp1_desc[kp_num].desc.type = DESC_ORB;
-                      temp_kp1_desc[kp_num].desc.vec.resize(desc_size);
-
-                      unsigned char *descPtr = descriptors_1.ptr<unsigned char>(kp_num);
-                      for (int jj = 0; jj < desc_size; jj++, descPtr++)
-                        temp_kp1_desc[kp_num].desc.vec[jj] = (float) *descPtr;
-                    }
-                  //ReprojectRegionsAndRemoveTouchBoundary(temp_kp1_desc, temp_img1.H, OriginalImg.cols, OriginalImg.rows, mrSizeORB);
-                  //          std::cout << "new size=" << temp_kp1_desc.size() << std::endl;
                 }
               else if (curr_desc.compare("CLIDescriptor") == 0) //ResSIFT
                 {
@@ -1207,56 +1057,6 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
           for (unsigned int synth=0; synth<n_synths; synth++)
             AddRegions(OneDetectorKeypointsMapVector[synth],curr_det);
         }
-    }
-}
-void ImageRepresentation::SaveRegionsAMatrix(std::string fname) {
-  std::vector<std::string> desc_names;
-  for (std::map<std::string, AffineRegionVectorMap>::const_iterator
-       reg_it = RegionVectorMap.begin(); reg_it != RegionVectorMap.end();  ++reg_it) {
-      for (AffineRegionVectorMap::const_iterator desc_it = reg_it->second.begin();
-           desc_it != reg_it->second.end(); ++desc_it) {
-          if (desc_it->first == "None") {
-              continue;
-            }
-          desc_names.push_back(desc_it->first);
-        }
-    }
-  for (unsigned int desc_num = 0; desc_num < desc_names.size(); desc_num++) {
-      std::string current_desc_name = desc_names[desc_num];
-      std::ofstream kpfile(fname + current_desc_name);
-      if (kpfile.is_open()) {
-          int num_keys = GetDescriptorsNumber(current_desc_name);
-          //    kpfile << "128" << std::endl;
-          //    kpfile << num_keys << std::endl;
-          if (num_keys == 0)
-            {
-              std::cerr << "No keypoints detected" << std::endl;
-              kpfile.close();
-              continue;
-            }
-          int desc_dim;
-          for (std::map<std::string, AffineRegionVectorMap>::const_iterator
-               reg_it = RegionVectorMap.begin(); reg_it != RegionVectorMap.end(); ++reg_it) {
-              for (AffineRegionVectorMap::const_iterator desc_it = reg_it->second.begin();
-                   desc_it != reg_it->second.end(); ++desc_it) {
-                  if (desc_it->first != current_desc_name) {
-                      continue;
-                    }
-                  int n_desc = desc_it->second.size();
-
-                  for (int i = 0; i < n_desc; i++) {
-                      AffineRegion ar = desc_it->second[i];
-                      saveARAMatrix(ar.reproj_kp, kpfile);
-                      for (unsigned int i = 0; i < ar.desc.vec.size(); ++i) {
-                          kpfile << ar.desc.vec[i] << " ";
-                        }
-                      kpfile << std::endl;
-
-                    }
-                }
-            }
-        }
-
     }
 }
 void ImageRepresentation::SaveRegionsMichal(std::string fname, int mode) {
@@ -1411,6 +1211,66 @@ void ImageRepresentation::SaveRegions(std::string fname, int mode) {
     }
 }
 
+void ImageRepresentation::SaveRegionsNPZ(std::string fname) {
+
+  int desc_dim = -1;
+
+  int num_desc_dets = 0;
+  for (std::map<std::string, AffineRegionVectorMap>::const_iterator
+       reg_it = RegionVectorMap.begin(); reg_it != RegionVectorMap.end();  ++reg_it) {
+      for (AffineRegionVectorMap::const_iterator desc_it = reg_it->second.begin();
+           desc_it != reg_it->second.end(); ++desc_it) {
+          if (desc_it->first == "None") continue;
+          num_desc_dets+=desc_it->second.size();
+          if (desc_dim == -1){
+              desc_dim = desc_it->second[0].desc.vec.size();
+            }
+          assert (desc_dim ==desc_it->second[0].desc.vec.size() );
+        }
+    }
+
+  std::vector<double> xy(2*num_desc_dets);
+  std::vector<double> scales(num_desc_dets);
+  std::vector<double> responses(num_desc_dets);
+  std::vector<double> A(4*num_desc_dets);
+  std::vector<uchar> descs(desc_dim*num_desc_dets);
+
+  int count = 0;
+  for (std::map<std::string, AffineRegionVectorMap>::const_iterator
+       reg_it = RegionVectorMap.begin(); reg_it != RegionVectorMap.end();  ++reg_it) {
+
+      for (AffineRegionVectorMap::const_iterator desc_it = reg_it->second.begin();
+           desc_it != reg_it->second.end(); ++desc_it) {
+          if (desc_it->first == "None") continue;
+          int n_desc = desc_it->second.size();
+          for (int i = 0; i < n_desc ; i++ ) {
+              AffineRegion ar = desc_it->second[i];
+              xy[2*count] = ar.reproj_kp.x;
+              xy[2*count+1] = ar.reproj_kp.y;
+              scales[count] = ar.reproj_kp.s;
+              A[4*count] = ar.reproj_kp.a11;
+              A[4*count+1] = ar.reproj_kp.a12;
+              A[4*count+2] = ar.reproj_kp.a21;
+              A[4*count+3] = ar.reproj_kp.a22;
+
+              responses[count] = ar.det_kp.response;
+
+              for (int di = 0; di < desc_dim ; di++ ) {
+                  descs[count*desc_dim + di] = (uchar)ar.desc.vec[di];
+                }
+              count++;
+            }
+        }
+    }
+
+  cnpy::npz_save(fname,"xy",&xy[0],{num_desc_dets,2},"w"); //"w" overwrites any existing file
+  cnpy::npz_save(fname,"scales",&scales[0],{num_desc_dets,1},"a"); //"a" appends to the file we created above
+  cnpy::npz_save(fname,"responses",&responses[0],{num_desc_dets,1},"a"); //"a" appends to the file we created above
+  cnpy::npz_save(fname,"A",&A[0],{num_desc_dets,4},"a"); //"a" appends to the file we created above
+  cnpy::npz_save(fname,"descs",&descs[0],{num_desc_dets,desc_dim},"a"); //"a" appends to the file we created above
+
+
+}
 void ImageRepresentation::LoadRegions(std::string fname) {
   std::ifstream kpfile(fname);
   if (kpfile.is_open()) {
@@ -1449,6 +1309,161 @@ void ImageRepresentation::LoadRegions(std::string fname) {
     }
   kpfile.close();
 }
+void ImageRepresentation::LoadRegionsNPZ(std::string fname) {
+  cnpy::npz_t my_npz = cnpy::npz_load(fname);
+  std::vector<std::string> keys;
+  bool A_is_here = false;
+  bool angle_is_here = false;
+
+  for(map<std::string,cnpy::NpyArray>::iterator it = my_npz.begin(); it != my_npz.end(); ++it) {
+      keys.push_back(it->first);
+      if (it->first == "A") {
+          A_is_here = true;
+        }
+      if (it->first == "angles") {
+          angle_is_here = true;
+        }
+    }
+
+
+  cnpy::NpyArray arr_xy = my_npz["xy"];
+  double* xy_ = arr_xy.data<double>();
+
+  cnpy::NpyArray arr_scales = my_npz["scales"];
+  double* scales_ = arr_scales.data<double>();
+
+
+  cnpy::NpyArray arr_resps = my_npz["responses"];
+  double* responses_ = arr_resps.data<double>();
+
+  cnpy::NpyArray arr_descs = my_npz["descs"];
+  uchar* descs_ = arr_descs.data<uchar>();
+
+  int num_of_kp = arr_xy.shape[0];
+  int desc_dim = arr_descs.shape[1];
+
+  assert( arr_xy.shape[0] ==  arr_scales.shape[0]);
+  assert( arr_scales.shape[0] ==  arr_descs.shape[0]);
+
+
+
+  AffineRegionVector desc_regions;
+  std::string det_name = "ReadAffs";
+  std::string desc_name = "ZMQ";
+  if (A_is_here) { // save affine matrix
+      cnpy::NpyArray arr_A = my_npz["A"];
+      assert( arr_A.shape[0] ==  arr_descs.shape[0]);
+
+      double* A_ = arr_A.data<double>();
+
+      for (int kp = 0; kp < num_of_kp; kp++)  {
+          AffineRegion ar;
+          ar.det_kp.x = xy_[2*kp];
+          ar.det_kp.y = xy_[2*kp+1];
+
+          ar.det_kp.s = scales_[kp];
+          ar.det_kp.a11 = A_[4*kp];
+          ar.det_kp.a12 = A_[4*kp+1];
+          ar.det_kp.a21 = A_[4*kp+2];
+          ar.det_kp.a22 = A_[4*kp+3];
+
+          ar.det_kp.response = responses_[kp];
+          ar.type = DET_READ;
+          ar.reproj_kp.x = xy_[2*kp];
+          ar.reproj_kp.y = xy_[2*kp+1];
+
+          ar.reproj_kp.s = scales_[kp];
+          ar.reproj_kp.a11 = A_[4*kp];
+          ar.reproj_kp.a12 = A_[4*kp+1];
+          ar.reproj_kp.a21 = A_[4*kp+2];
+          ar.reproj_kp.a22 = A_[4*kp+3];
+          ar.reproj_kp.response = responses_[kp];
+          ar.type = DET_READ;
+
+          ar.desc.type = DESC_ZMQ;
+          ar.desc.vec.resize(desc_dim);
+          for (int dd=0; dd < desc_dim; dd++){
+              ar.desc.vec[dd] = descs_[kp*desc_dim + dd];
+            }
+          desc_regions.push_back(ar);
+        }
+
+    } else if (angle_is_here){ //save orientation
+      cnpy::NpyArray arr_angles = my_npz["angles"];
+      assert( arr_angles.shape[0] ==  arr_descs.shape[0]);
+
+      double* angles_ = arr_angles.data<double>();
+
+      for (int kp = 0; kp < num_of_kp; kp++)  {
+          AffineRegion ar;
+          double angle = angles_[kp]*M_PI/180.0;
+          ar.det_kp.x = xy_[2*kp];
+          ar.det_kp.y = xy_[2*kp+1];
+
+          ar.det_kp.s = scales_[kp];
+          ar.det_kp.a11 = cos(angle);
+          ar.det_kp.a12 = sin(angle);
+          ar.det_kp.a21 = -sin(angle);
+          ar.det_kp.a22 = cos(angle);
+          ar.det_kp.response = responses_[kp];
+          ar.type = DET_READ;
+          ar.reproj_kp.x = xy_[2*kp];
+          ar.reproj_kp.y = xy_[2*kp+1];
+
+          ar.reproj_kp.s = scales_[kp];
+          ar.reproj_kp.a11 = cos(angle);
+          ar.reproj_kp.a12 = sin(angle);
+          ar.reproj_kp.a21 = -sin(angle);
+          ar.reproj_kp.a22 = cos(angle);
+          ar.reproj_kp.response = responses_[kp];
+          ar.type = DET_READ;
+
+          ar.desc.type = DESC_ZMQ;
+          ar.desc.vec.resize(desc_dim);
+          for (int dd=0; dd < desc_dim; dd++){
+              ar.desc.vec[dd] = descs_[kp*desc_dim + dd];
+            }
+          desc_regions.push_back(ar);
+        }
+    } else { //circular upright
+      for (int kp = 0; kp < num_of_kp; kp++)  {
+          AffineRegion ar;
+          double angle = 0;
+          ar.det_kp.x = xy_[2*kp];
+          ar.det_kp.y = xy_[2*kp+1];
+
+          ar.det_kp.s = scales_[kp];
+          ar.det_kp.a11 = cos(angle);
+          ar.det_kp.a12 = sin(angle);
+          ar.det_kp.a21 = -sin(angle);
+          ar.det_kp.a22 = cos(angle);
+          ar.det_kp.response = responses_[kp];
+          ar.type = DET_READ;
+          ar.reproj_kp.x = xy_[2*kp];
+          ar.reproj_kp.y = xy_[2*kp+1];
+
+          ar.reproj_kp.s = scales_[kp];
+          ar.reproj_kp.a11 = cos(angle);
+          ar.reproj_kp.a12 = sin(angle);
+          ar.reproj_kp.a21 = -sin(angle);
+          ar.reproj_kp.a22 = cos(angle);
+          ar.reproj_kp.response = responses_[kp];
+          ar.type = DET_READ;
+
+          ar.desc.type = DESC_ZMQ;
+          ar.desc.vec.resize(desc_dim);
+          for (int dd=0; dd < desc_dim; dd++){
+              ar.desc.vec[dd] = descs_[kp*desc_dim + dd];
+            }
+          desc_regions.push_back(ar);
+        }
+    }
+
+
+  AddRegions(desc_regions,det_name,desc_name);
+
+}
+
 void ImageRepresentation::SaveDescriptorsBenchmark(std::string fname1) {
   std::vector<std::string> desc_names;
   int num_keys  = 0;

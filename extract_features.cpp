@@ -42,6 +42,12 @@ using namespace std;
 
 const int nn_n = 50; //number of nearest neighbours retrieved to get 1st inconsistent
 
+inline static bool endsWith(const std::string& str, const std::string& suffix)
+{
+  return str.size() >= suffix.size() && 0 == str.compare(str.size()-suffix.size(), suffix.size(), suffix);
+}
+
+
 int main(int argc, char **argv)
 {
   if ((argc < 4))
@@ -112,7 +118,15 @@ int main(int argc, char **argv)
       ImgRep1.SaveRegionsMichal(Config1.CLIparams.k1_fname, 123);
 
     }  else {
-      ImgRep1.SaveRegionsAMatrix(Config1.CLIparams.k1_fname);
+      if (endsWith(Config1.CLIparams.k1_fname,".npz")){
+          ImgRep1.SaveRegionsNPZ(Config1.CLIparams.k1_fname);
+        } else {
+          ImgRep1.SaveRegions(Config1.CLIparams.k1_fname,0);
+
+        }
+
+
+      //   ImgRep1.SaveRegionsAMatrix(Config1.CLIparams.k1_fname);
     }
   return 0;
 }

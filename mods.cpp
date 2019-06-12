@@ -38,6 +38,11 @@
 #include <omp.h>
 #endif
 
+inline static bool endsWith(const std::string& str, const std::string& suffix)
+{
+  return str.size() >= suffix.size() && 0 == str.compare(str.size()-suffix.size(), suffix.size(), suffix);
+}
+
 using namespace std;
 const int nn_n = 50; //number of nearest neighbours retrieved to get 1st inconsistent
 
@@ -178,6 +183,7 @@ int main(int argc, char **argv)
     {
       ImgRep1 = ImageRepresentation(img1,Config1.CLIparams.img1_fname);
       ImgRep2 = ImageRepresentation(img2,Config1.CLIparams.img2_fname);
+
     }
 
   CorrespondenceBank Tentatives;
@@ -208,8 +214,19 @@ int main(int argc, char **argv)
             }
         }
       if (Config1.read_pre_extracted) {
-          ImgRep1.LoadRegions(Config1.CLIparams.k1_fname);
-          ImgRep2.LoadRegions(Config1.CLIparams.k2_fname);
+          if (endsWith(Config1.CLIparams.k1_fname,".npz")){
+              ImgRep1.LoadRegionsNPZ(Config1.CLIparams.k1_fname);
+            }
+          else {
+              ImgRep1.LoadRegions(Config1.CLIparams.k1_fname);
+
+            }
+          if (endsWith(Config1.CLIparams.k2_fname,".npz")){
+              ImgRep2.LoadRegionsNPZ(Config1.CLIparams.k2_fname);
+            }
+          else {
+              ImgRep2.LoadRegions(Config1.CLIparams.k2_fname);
+            }
         } else {
 #ifdef _OPENMP
           omp_set_nested(1);
@@ -415,8 +432,21 @@ int main(int argc, char **argv)
       if (Config1.OutputParam.writeKeypoints && !Config1.read_pre_extracted)
         {
           // std::cerr << "Keypoints outputs is not implemented yet!" << std::endl;
-          ImgRep1.SaveRegions(Config1.CLIparams.k1_fname,0);
-          ImgRep2.SaveRegions(Config1.CLIparams.k2_fname,0);
+          if (endsWith(Config1.CLIparams.k1_fname,".npz")){
+
+              ImgRep1.SaveRegionsNPZ(Config1.CLIparams.k1_fname);
+            } else {
+              ImgRep1.SaveRegions(Config1.CLIparams.k1_fname,0);
+
+            }
+          if (endsWith(Config1.CLIparams.k2_fname,".npz")){
+
+              ImgRep2.SaveRegionsNPZ(Config1.CLIparams.k2_fname);
+            } else {
+              ImgRep2.SaveRegions(Config1.CLIparams.k2_fname,0);
+
+            }
+
 
         }
       if (Config1.DrawParam.writeImages)

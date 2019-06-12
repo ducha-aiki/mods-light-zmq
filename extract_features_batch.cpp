@@ -47,6 +47,10 @@ inline bool exists_test3 (const std::string& name) {
 using namespace std;
 
 const int nn_n = 50; //number of nearest neighbours retrieved to get 1st inconsistent
+inline static bool endsWith(const std::string& str, const std::string& suffix)
+{
+  return str.size() >= suffix.size() && 0 == str.compare(str.size()-suffix.size(), suffix.size(), suffix);
+}
 
 
 int main(int argc, char **argv)
@@ -144,8 +148,14 @@ int main(int argc, char **argv)
       if (Config1.OutputParam.outputMikFormat) {
           ImgRep1.SaveRegionsMichal(out_fname, 123);
         }  else {
+          if (endsWith(out_fname,".npz")){
+              ImgRep1.SaveRegionsNPZ(out_fname);
+            } else {
+              ImgRep1.SaveRegions(out_fname,0);
 
-          ImgRep1.SaveRegionsAMatrix(out_fname);
+            }
+
+//          ImgRep1.SaveRegionsAMatrix(out_fname);
         }
     }
   return 0;
