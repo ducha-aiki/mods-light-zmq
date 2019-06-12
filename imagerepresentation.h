@@ -52,6 +52,7 @@ public:
   void SaveDescriptorsBenchmark(std::string fname1);
   void LoadRegions(std::string fname);
   void LoadRegionsNPZ(std::string fname);
+  AffineRegionVector PreLoadRegionsNPZ(std::string fname);
 
 protected:
   TimeLog TimeSpent;

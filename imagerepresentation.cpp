@@ -12,6 +12,10 @@
 #define VERBOSE 1
 #include <zmq.hpp>
 
+inline static bool endsWith(const std::string& str, const std::string& suffix)
+{
+  return str.size() >= suffix.size() && 0 == str.compare(str.size()-suffix.size(), suffix.size(), suffix);
+}
 std::vector<std::vector<float> > DescribeWithZmq(zmqDescriptorParams par,
                                                  AffineRegionVector &kps,
                                                  SynthImage &temp_img1){
@@ -701,30 +705,35 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
               DetectAffineRegions(temp_img1, temp_kp1,det_par.HessParam,DET_HESSIAN,DetectAffineKeypoints);
             }
           else if (curr_det.compare("ReadAffs") == 0) {
-              std::ifstream focikp(det_par.ReadAffsFromFileParam.fname);
-              if (focikp.is_open()) {
-                  int kp_size;
-                  focikp >> kp_size;
-                  std::cerr << kp_size << std::endl;
-                  temp_kp1.reserve(kp_size);
-                  for (int kp_num = 0; kp_num < kp_size; kp_num++) {
-                      AffineRegion temp_region;
-                      temp_region.det_kp.pyramid_scale = -1;
-                      temp_region.det_kp.octave_number = -1;
-                      temp_region.det_kp.sub_type = 101;
-                      focikp >> temp_region.det_kp.x;
-                      focikp >> temp_region.det_kp.y;
-                      focikp >> temp_region.det_kp.s;
-                      focikp >> temp_region.det_kp.a11;
-                      focikp >> temp_region.det_kp.a12;
-                      focikp >> temp_region.det_kp.a21;
-                      focikp >> temp_region.det_kp.a22;
-                      temp_region.det_kp.response = 100;
-                      temp_region.type = DET_READ;
-                      temp_kp1.push_back(temp_region);
+              if (endsWith(det_par.ReadAffsFromFileParam.fname,".npz")){
+
+                  temp_kp1 =  ImageRepresentation::PreLoadRegionsNPZ(det_par.ReadAffsFromFileParam.fname);
+                }  else {
+                  std::ifstream focikp(det_par.ReadAffsFromFileParam.fname);
+                  if (focikp.is_open()) {
+                      int kp_size;
+                      focikp >> kp_size;
+                      std::cerr << kp_size << std::endl;
+                      temp_kp1.reserve(kp_size);
+                      for (int kp_num = 0; kp_num < kp_size; kp_num++) {
+                          AffineRegion temp_region;
+                          temp_region.det_kp.pyramid_scale = -1;
+                          temp_region.det_kp.octave_number = -1;
+                          temp_region.det_kp.sub_type = 101;
+                          focikp >> temp_region.det_kp.x;
+                          focikp >> temp_region.det_kp.y;
+                          focikp >> temp_region.det_kp.s;
+                          focikp >> temp_region.det_kp.a11;
+                          focikp >> temp_region.det_kp.a12;
+                          focikp >> temp_region.det_kp.a21;
+                          focikp >> temp_region.det_kp.a22;
+                          temp_region.det_kp.response = 100;
+                          temp_region.type = DET_READ;
+                          temp_kp1.push_back(temp_region);
+                        }
                     }
+                  focikp.close();
                 }
-              focikp.close();
             }
           else if (curr_det.compare("DoG")==0)
             {
@@ -1309,7 +1318,7 @@ void ImageRepresentation::LoadRegions(std::string fname) {
     }
   kpfile.close();
 }
-void ImageRepresentation::LoadRegionsNPZ(std::string fname) {
+ AffineRegionVector ImageRepresentation::PreLoadRegionsNPZ(std::string fname) {
   cnpy::npz_t my_npz = cnpy::npz_load(fname);
   std::vector<std::string> keys;
   bool A_is_here = false;
@@ -1458,9 +1467,14 @@ void ImageRepresentation::LoadRegionsNPZ(std::string fname) {
           desc_regions.push_back(ar);
         }
     }
+  return desc_regions;
 
 
-  AddRegions(desc_regions,det_name,desc_name);
+}
+void ImageRepresentation::LoadRegionsNPZ(std::string fname) {
+
+  AffineRegionVector avr = PreLoadRegionsNPZ(fname);
+  AddRegions(avr,"ReadAffs", "ZMQ");
 
 }
 
