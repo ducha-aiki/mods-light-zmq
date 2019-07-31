@@ -4,6 +4,7 @@
 
 #include "io_mods.h"
 #include "synth-detection.hpp"
+#include "detectors/saddle/sorb.h"
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -106,7 +107,7 @@ void GetMSERPars(extrema::ExtremaParams &MSERPars, INIReader &reader,const char*
   MSERPars.max_area = reader.GetDouble(section, "max_area", MSERPars.max_area);
   MSERPars.min_size = reader.GetInteger(section, "min_size", MSERPars.min_size);
   MSERPars.min_margin = reader.GetInteger(section, "min_margin", MSERPars.min_margin);
- 
+
   std::vector< std::string> temp_str;
   reader.GetStringVector(section, "mode",temp_str);
   if (temp_str[0].compare("RelativeTh")==0)
@@ -243,20 +244,6 @@ void GetHarrPars(ScaleSpaceDetectorParams &HarrPars, INIReader &reader,const cha
 
 }
 
-void GetORBPars(ORBParams &pars, INIReader &reader,const char* section)
-{
-  pars.edgeThreshold = reader.GetInteger(section, "edgeThreshold", pars.edgeThreshold);
-  pars.firstLevel= reader.GetInteger(section, "firstLevel", pars.firstLevel);
-  pars.nfeatures = reader.GetInteger(section, "nfeatures", pars.nfeatures);
-  pars.nlevels = reader.GetInteger(section, "nlevels", pars.nlevels);
-  pars.scaleFactor = reader.GetDouble(section, "scaleFactor", pars.scaleFactor);
-  pars.WTA_K = reader.GetInteger(section, "WTA_K", pars.WTA_K);
-  GetPatchExtractionPars(pars.PEParam,reader,section);
-  pars.doBaumberg = reader.GetBoolean(section,"doBaumberg",pars.doBaumberg);
-  pars.doNMS = reader.GetInteger(section,"doNMS",pars.doNMS);
-
-}
-
 void GetDoGPars(ScaleSpaceDetectorParams &DoGPars, INIReader &reader,const char* section)
 {
   DoGPars.PyramidPars.DetectorType = DET_DOG;
@@ -295,6 +282,65 @@ void GetDoGPars(ScaleSpaceDetectorParams &DoGPars, INIReader &reader,const char*
     DoGPars.PyramidPars.DetectorMode = FIXED_TH;
 
 }
+
+void GetORBPars(ORBParams &pars, INIReader &reader,const char* section)
+{
+  pars.edgeThreshold = reader.GetInteger(section, "edgeThreshold", pars.edgeThreshold);
+  pars.firstLevel= reader.GetInteger(section, "firstLevel", pars.firstLevel);
+  pars.nfeatures = reader.GetInteger(section, "nfeatures", pars.nfeatures);
+  pars.nlevels = reader.GetInteger(section, "nlevels", pars.nlevels);
+  pars.scaleFactor = reader.GetDouble(section, "scaleFactor", pars.scaleFactor);
+  pars.WTA_K = reader.GetInteger(section, "WTA_K", pars.WTA_K);
+  GetPatchExtractionPars(pars.PEParam,reader,section);
+  pars.doBaumberg = reader.GetBoolean(section,"doBaumberg",pars.doBaumberg);
+  pars.doNMS = reader.GetInteger(section,"doNMS",pars.doNMS);
+
+}
+void GetSaddlePars(SaddleParams &pars, INIReader &reader,const char* section)
+{
+  pars.respThreshold = reader.GetDouble(section, "respThreshold", pars.respThreshold);
+  pars.epsilon =  reader.GetInteger(section, "epsilon", pars.epsilon);
+  pars.pyrLevels = reader.GetInteger(section, "nlevels", pars.pyrLevels);
+  pars.scalefac = reader.GetDouble(section, "scaleFactor", pars.scalefac);
+  pars.doNMS = reader.GetInteger(section, "doNMS", pars.doNMS);
+  pars.edgeThreshold = reader.GetInteger(section, "edgeThreshold", pars.edgeThreshold);
+  pars.descSize = reader.GetInteger(section, "descSize", pars.descSize);
+  pars.deltaThr = reader.GetInteger(section, "deltaThr", pars.deltaThr);
+  pars.doBaumberg = reader.GetBoolean(section,"doBaumberg",pars.doBaumberg);
+  pars.WTA_K = reader.GetInteger(section, "WTA_K", pars.WTA_K);
+  pars.nfeatures = reader.GetInteger(section, "nfeatures", pars.nfeatures);
+  //ZERO_SCORE = 0, DELTA_SCORE = 1, SUMOFABS_SCORE = 2, AVGOFABS_SCORE = 3 };
+
+  std::string scoretype = reader.GetString(section, "scoreType", "SUMOFABS");
+
+  if ( scoretype == "SUMOFABS" )
+    pars.scoreType = cmp::SORB::SUMOFABS_SCORE;
+  else  if ( scoretype == "AVGOFABS" )
+    pars.scoreType = cmp::SORB::AVGOFABS_SCORE;
+  else if ( scoretype == "DELTA" )
+    pars.scoreType= cmp::SORB::DELTA_SCORE;
+  else if ( scoretype == "ZERO" )
+    pars.scoreType = cmp::SORB::ZERO_SCORE;
+  else if ( scoretype == "NORM" )
+    pars.scoreType = cmp::SORB::NORM_SCORE;
+  else if ( scoretype == "Hess" )
+    pars.scoreType = cmp::SORB::HESS_SCORE;
+
+
+  pars.allC1feats = reader.GetBoolean(section,"allC1feats",pars.allC1feats);
+  pars.strictMaximum = reader.GetBoolean(section,"strictMaximum",pars.strictMaximum);
+  pars.gravityCenter = reader.GetBoolean(section,"gravityCenter",pars.gravityCenter);
+  pars.subPixPrecision = reader.GetInteger(section, "subPixPrecision", pars.subPixPrecision);
+  pars.innerTstType = reader.GetInteger(section, "innerTstType", pars.innerTstType);
+  pars.minArcLength = reader.GetInteger(section, "minArcLength", pars.minArcLength);
+  pars.maxArcLength = reader.GetInteger(section, "maxArcLength", pars.maxArcLength);
+
+  pars.ringsType = (short) reader.GetInteger(section, "ringsType", pars.ringsType);
+  pars.binPattern = reader.GetInteger(section, "binPattern", pars.binPattern);
+  pars.saddle_perc = reader.GetDouble(section, "saddle_perc", pars.saddle_perc);
+
+}
+
 void GetZMQPars(zmqDescriptorParams &pars, INIReader &reader,const char* section)
 {
   pars.port  =reader.GetString(section, "port", pars.port);
@@ -516,6 +562,7 @@ int getCLIparamExtractFeatures(configs &conf1,int argc, char **argv)
   GetDomOriPars(conf1.DomOriPars,ConfigIni);
   GetHarrPars(conf1.DetectorsPars.HarrParam,ConfigIni);
   GetMSERPars(conf1.DetectorsPars.MSERParam, ConfigIni);
+  GetSaddlePars(conf1.DetectorsPars.SaddleParam,ConfigIni);
   GetReadPars(conf1.DetectorsPars.ReadAffsFromFileParam, ConfigIni);
   GetBaumbergPars(conf1.DetectorsPars.BaumbergParam, ConfigIni);
 
@@ -620,6 +667,8 @@ int getCLIparam(configs &conf1,int argc, char **argv)
   GetHarrPars(conf1.DetectorsPars.HarrParam,ConfigIni);
   GetMSERPars(conf1.DetectorsPars.MSERParam, ConfigIni);
   GetReadPars(conf1.DetectorsPars.ReadAffsFromFileParam, ConfigIni);
+  GetSaddlePars(conf1.DetectorsPars.SaddleParam,ConfigIni);
+
   GetCLIDescPars(conf1.DescriptorPars.CLIDescParam, ConfigIni);
 
   GetBaumbergPars(conf1.DetectorsPars.BaumbergParam, ConfigIni);
@@ -652,7 +701,7 @@ int getCLIparam(configs &conf1,int argc, char **argv)
                                                              conf1.DrawParam.drawDetectedRegions);
 
   conf1.OutputParam.writeKeypoints = ConfigIni.GetInteger("TextOutput", "writeKeypoints", 1);  conf1.OutputParam.outputMikFormat = ConfigIni.GetBoolean("TextOutput", "outputMikFormat",
- conf1.OutputParam.outputMikFormat);
+                                                                                                                                                        conf1.OutputParam.outputMikFormat);
   conf1.OutputParam.writeMatches = ConfigIni.GetInteger("TextOutput", "writeMatches", 1);
   conf1.OutputParam.timeLog = ConfigIni.GetInteger("TextOutput", "timeLog", 0);
   conf1.OutputParam.featureComplemetaryLog = ConfigIni.GetInteger("TextOutput", "featureComplemetaryLog", 0);

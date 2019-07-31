@@ -43,6 +43,7 @@ add_subdirectory( ./matutls)
 add_subdirectory( ./detectors)
 add_subdirectory( ./detectors/affinedetectors)
 add_subdirectory( ./detectors/mser )
+add_subdirectory( ./detectors/saddle )
 add_subdirectory( ./libMatch)
 add_subdirectory( ./libNumerics)
 add_subdirectory( ./cnpy)
@@ -96,14 +97,14 @@ TARGET_LINK_LIBRARIES(synth-detection matching mser affinedetectors helpers ${Op
 
 
 add_executable(mods  mods.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
-TARGET_LINK_LIBRARIES(mods inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq cnpy)
+TARGET_LINK_LIBRARIES(mods inih matching synth-detection mser affinedetectors saddle ${OpenCV_LIBS} zmq cnpy)
 
 #add_executable(mods-with-mask  mods-with-mask.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
 #TARGET_LINK_LIBRARIES(mods-with-mask inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq cnpy)
 
 
 add_executable(extract_features extract_features.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
-TARGET_LINK_LIBRARIES(extract_features inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq cnpy)
+TARGET_LINK_LIBRARIES(extract_features inih matching synth-detection mser affinedetectors saddle ${OpenCV_LIBS} zmq cnpy)
 
 add_executable(extract_features_batch extract_features_batch.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
-TARGET_LINK_LIBRARIES(extract_features_batch inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq cnpy)
+TARGET_LINK_LIBRARIES(extract_features_batch inih matching synth-detection mser affinedetectors saddle ${OpenCV_LIBS} zmq cnpy)

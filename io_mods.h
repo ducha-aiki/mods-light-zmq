@@ -55,7 +55,7 @@ void GetHarrPars(ScaleSpaceDetectorParams &HarrPars, INIReader &reader,const cha
 void GetDoGPars(ScaleSpaceDetectorParams &DoGPars, INIReader &reader,const char* section="DoG");
 void GetDomOriPars(DominantOrientationParams &DomOriPars, INIReader &reader,const char* section="DominantOrientation");
 void GetBaumbergPars(AffineShapeParams &pars, INIReader &reader,const char* section="AffineAdaptation");
-
+void GetSaddlePars(SaddleParams &pars, INIReader &reader,const char* section="Saddle");
 void GetZMQPars(zmqDescriptorParams &pars, INIReader &reader,const char* section="zmqDescriptor");
 void GetMatchPars(MatchPars &pars, INIReader &reader, INIReader &iter_reader, const char* section="Matching");
 void GetSIFTDescPars(SIFTDescriptorParams &pars, INIReader &reader,const char* section="SIFTDescriptor");

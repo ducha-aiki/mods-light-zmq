@@ -4,6 +4,7 @@
 #include "structures.hpp"
 #include "mser/extrema/extremaParams.h"
 #include "affinedetectors/scale-space-detector.hpp"
+#include "detectors/saddle/lbq.h"
 
 struct ReadAffsFromFileParams {
     std::string fname;
@@ -45,12 +46,68 @@ struct ORBParams
 };
 
 
+struct SaddleParams{
+    bool doBaumberg;
+    int doNMS;
+    double respThreshold;
+    int epsilon;
+    int pyrLevels;
+    double scalefac;
+    int deltaThr;
+    int edgeThreshold;
+    int descSize;
+    int WTA_K;
+    int nfeatures;
+    int scoreType;
+    int gab;
+    bool allC1feats;
+    bool strictMaximum;
+    int subPixPrecision;
+    bool gravityCenter;
+    int innerTstType;
+    int minArcLength;
+    int maxArcLength;
+    short ringsType;
+    int binPattern;
+    float saddle_perc; //alpha
+    PatchExtractionParams PEParam;
+    SaddleParams() {
+        allC1feats = false;
+        doBaumberg = false;
+        strictMaximum = false;
+        subPixPrecision = 1;
+        gravityCenter = false;
+        PEParam.patchSize = descSize;
+        PEParam.mrSize = 3.0;
+        innerTstType = 1;
+        doNMS = 1;
+        gab = edgeThreshold;
+        respThreshold = 0;
+        epsilon = 1;
+        pyrLevels = 8;
+        scalefac = 1.3;
+        deltaThr = 0;
+        edgeThreshold = 3;
+        descSize = 31;
+        WTA_K = 2;
+        nfeatures = 5000;
+        scoreType = 1;
+        minArcLength = 2;
+        maxArcLength = 8;
+        ringsType = 4;
+         binPattern = Binpat::OCV;
+         saddle_perc = 0.5;
+    }
+};
+
+
 struct DetectorsParameters
 {
     extrema::ExtremaParams MSERParam;
     ScaleSpaceDetectorParams HessParam;
     ScaleSpaceDetectorParams HarrParam;
     ScaleSpaceDetectorParams DoGParam;
+    SaddleParams SaddleParam;
     zmqDescriptorParams AffNetParam;
     zmqDescriptorParams OriNetParam;
     ReadAffsFromFileParams ReadAffsFromFileParam;

@@ -19,12 +19,13 @@ enum detector_type {DET_HESSIAN = 0,
                     DET_MSER = 3,
                     DET_READ = 4,
                     DET_ORB = 5,
+                    DET_SADDLE = 6,
                     DET_UNKNOWN = 1000};
 
 
 const std::string _DetectorNames [] = {"HessianAffine", "DoG",
                                        "HarrisAffine", "MSER",
-                                       "ReadAffs", "ORB", "Unknown"};
+                                       "ReadAffs", "ORB","Saddle",  "Unknown"};
 
 
 const std::vector<std::string> DetectorNames (_DetectorNames,_DetectorNames +
