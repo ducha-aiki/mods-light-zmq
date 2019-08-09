@@ -1324,7 +1324,7 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                       temp_pt.pt.y = temp_kp1_desc[kp_num].det_kp.y;
                       temp_pt.octave = (int) MAX(0, log2(temp_kp1_desc[kp_num].det_kp.s));
                       temp_pt.angle = atan2( temp_kp1_desc[kp_num].det_kp.a12, temp_kp1_desc[kp_num].det_kp.a11) * 180 / M_PI;
-                      temp_pt.size = temp_kp1_desc[kp_num].det_kp.s  *  5.192;
+                      temp_pt.size = temp_kp1_desc[kp_num].det_kp.s  *  10.192;
                       keypoints_1.push_back(temp_pt);
                     }
                   temp_img1.pixels.convertTo(CharImage, CV_8U);
@@ -1341,7 +1341,7 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                       temp_kp1_desc[kp_num].det_kp.a12 = sin(keypoints_1[kp_num].angle * M_PI / 180.0);
                       temp_kp1_desc[kp_num].det_kp.a21 = -sin(keypoints_1[kp_num].angle * M_PI / 180.0);
                       temp_kp1_desc[kp_num].det_kp.a22 = cos(keypoints_1[kp_num].angle * M_PI / 180.0);
-                      temp_kp1_desc[kp_num].det_kp.s = keypoints_1[kp_num].size / (5.192);
+                      temp_kp1_desc[kp_num].det_kp.s = keypoints_1[kp_num].size / (10.192);
                       temp_kp1_desc[kp_num].det_kp.response = keypoints_1[kp_num].response;
                       temp_kp1_desc[kp_num].type = temp_kp1[0].type;
                       temp_kp1_desc[kp_num].desc.type = DESC_FREAK;
