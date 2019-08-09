@@ -29,7 +29,8 @@ public:
       TYPE_SHADDLE = 5,
       TYPE_SADDLE_CONDITIONED = 6,
       TYPE_BLOB_CONDITIONED = 7,
-      TYPE_SADDLE_BLOB = 8
+      TYPE_SADDLE_BLOB = 8,
+      TYPE_BLOB_CONDITIONED_OUTERTEST = 9
     };
 
     CV_WRAP void detect2( const Mat& image, CV_OUT vector<SadKeyPoint>& keypoints, Mat & resp, const Mat& mask=Mat() ) const;
@@ -54,7 +55,8 @@ public:
     CV_WRAP FastFeatureDetector2( int threshold, int nonmaxSuppression, int type, float scale, double thr);
     CV_WRAP FastFeatureDetector2( int threshold, int nonmaxSuppression, int type, float scale, double responsethr, uchar deltaThr);
     CV_WRAP FastFeatureDetector2( int threshold, int nonmaxSuppression, int type, float scale, double responsethr, uchar deltaThr, int scoreType);
-    CV_WRAP FastFeatureDetector2( int threshold, int nonmaxSuppression, int type, float scale, double responsethr, uchar deltaThr, int scoreType, bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength );
+    CV_WRAP FastFeatureDetector2( int threshold, int nonmaxSuppression, int type, float scale, double responsethr, uchar deltaThr, int scoreType,
+                                  bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength, uchar blobThr );
    // cv::AlgorithmInfo* info() const;
 
 
@@ -74,6 +76,7 @@ protected:
     int innerTstType;
     int minArcLength;
     int maxArcLength;
+    uchar blobThr;
 
 };
 

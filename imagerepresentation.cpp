@@ -3,6 +3,8 @@
 #include "detectors/mser/extrema/extrema.h"
 #include <fstream>
 #include <opencv2/features2d/features2d.hpp>
+
+
 #include "cnpy/cnpy.h"
 #ifdef _OPENMP
 #include <omp.h>
@@ -820,7 +822,7 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                                             det_par.SaddleParam.maxArcLength,
                                             det_par.SaddleParam.ringsType,
                                             det_par.SaddleParam.binPattern,
-                                            det_par.SaddleParam.saddle_perc);
+                                            det_par.SaddleParam.blobThr);
                   Mat dcts, mask;
                   printf("Detecting SADDLE points... \n");
                   temp_img1.pixels.convertTo(CharImage,CV_8U);
@@ -838,7 +840,7 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                       temp_kp1[kp_num].det_kp.a12 = sin(keypoints_Sad[kp_num].angle*M_PI/180.0);
                       temp_kp1[kp_num].det_kp.a21 = -sin(keypoints_Sad[kp_num].angle*M_PI/180.0);
                       temp_kp1[kp_num].det_kp.a22 = cos(keypoints_Sad[kp_num].angle*M_PI/180.0);
-                      temp_kp1[kp_num].det_kp.s = keypoints_Sad[kp_num].size /   3.0; // 3.0 - because inside detector scale = level * patch_size -> ~ 3 sigma.
+                      temp_kp1[kp_num].det_kp.s = keypoints_Sad[kp_num].size /   det_par.ORBParam.PEParam.mrSize; // 3.0 - because inside detector scale = level * patch_size -> ~ 3 sigma.
                       //We need 1 sigma for MODS convention
                       temp_kp1[kp_num].det_kp.octave_number =  keypoints_Sad[kp_num].octave;
                       temp_kp1[kp_num].det_kp.response = keypoints_Sad[kp_num].response;
@@ -878,9 +880,10 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                       temp_kp1[kp_num].det_kp.a12 = sin(keypoints_1[kp_num].angle*M_PI/180.0);
                       temp_kp1[kp_num].det_kp.a21 = -sin(keypoints_1[kp_num].angle*M_PI/180.0);
                       temp_kp1[kp_num].det_kp.a22 = cos(keypoints_1[kp_num].angle*M_PI/180.0);
-                      temp_kp1[kp_num].det_kp.s = keypoints_1[kp_num].size / 3.0; // - because inside detector scale = level * patch_size -> ~ 3 sigma.
+                      temp_kp1[kp_num].det_kp.s = keypoints_1[kp_num].size /  det_par.ORBParam.PEParam.mrSize; // - because inside detector scale = level * patch_size -> ~ 3 sigma.
                       //We need 1 sigma for MODS convention
                       temp_kp1[kp_num].det_kp.response = keypoints_1[kp_num].response;
+
                       temp_kp1[kp_num].type = DET_ORB;
                     }
                 }
@@ -1157,7 +1160,7 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                                                     det_par.SaddleParam.maxArcLength,
                                                     det_par.SaddleParam.ringsType,
                                                     det_par.SaddleParam.binPattern,
-                                                    det_par.SaddleParam.saddle_perc);
+                                                    det_par.SaddleParam.blobThr);
 
 
                           Mat mask;
@@ -1181,7 +1184,7 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                               temp_kp1_desc[kp_num].det_kp.a12 = sin(keypoints_Sad[kp_num].angle*M_PI/180.0);
                               temp_kp1_desc[kp_num].det_kp.a21 = -sin(keypoints_Sad[kp_num].angle*M_PI/180.0);
                               temp_kp1_desc[kp_num].det_kp.a22 = cos(keypoints_Sad[kp_num].angle*M_PI/180.0);
-                              temp_kp1_desc[kp_num].det_kp.s = keypoints_Sad[kp_num].size /   3.0; // 3.0 - because inside detector scale = level * patch_size -> ~ 3 sigma.
+                              temp_kp1_desc[kp_num].det_kp.s = keypoints_Sad[kp_num].size /   det_par.ORBParam.PEParam.mrSize; // 3.0 - because inside detector scale = level * patch_size -> ~ 3 sigma.
                               //We need 1 sigma for MODS convention
                               temp_kp1_desc[kp_num].det_kp.response = keypoints_Sad[kp_num].response;
                               temp_kp1_desc[kp_num].type = DET_SADDLE;
@@ -1193,7 +1196,7 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                               temp_kp1[kp_num].det_kp.a12 = sin(keypoints_Sad[kp_num].angle*M_PI/180.0);
                               temp_kp1[kp_num].det_kp.a21 = -sin(keypoints_Sad[kp_num].angle*M_PI/180.0);
                               temp_kp1[kp_num].det_kp.a22 = cos(keypoints_Sad[kp_num].angle*M_PI/180.0);
-                              temp_kp1[kp_num].det_kp.s = keypoints_Sad[kp_num].size /   3.0; // 3.0 - because inside detector scale = level * patch_size -> ~ 3 sigma.
+                              temp_kp1[kp_num].det_kp.s = keypoints_Sad[kp_num].size /   det_par.ORBParam.PEParam.mrSize; // 3.0 - because inside detector scale = level * patch_size -> ~ 3 sigma.
                               //We need 1 sigma for MODS convention
                               temp_kp1[kp_num].det_kp.response = keypoints_Sad[kp_num].response;
                               temp_kp1[kp_num].type = DET_SADDLE;
@@ -1234,7 +1237,7 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                               temp_kp1_desc[kp_num].det_kp.a12 = sin(keypoints_1[kp_num].angle*M_PI/180.0);
                               temp_kp1_desc[kp_num].det_kp.a21 = -sin(keypoints_1[kp_num].angle*M_PI/180.0);
                               temp_kp1_desc[kp_num].det_kp.a22 = cos(keypoints_1[kp_num].angle*M_PI/180.0);
-                              temp_kp1_desc[kp_num].det_kp.s = keypoints_1[kp_num].size /   3.0; // 3.0 - because inside detector scale = level * patch_size -> ~ 3 sigma.
+                              temp_kp1_desc[kp_num].det_kp.s = keypoints_1[kp_num].size /   det_par.ORBParam.PEParam.mrSize; // 3.0 - because inside detector scale = level * patch_size -> ~ 3 sigma.
                               //We need 1 sigma for MODS convention
                               temp_kp1_desc[kp_num].det_kp.response = keypoints_1[kp_num].response;
                               temp_kp1_desc[kp_num].type = DET_ORB;
@@ -1246,7 +1249,7 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                               temp_kp1[kp_num].det_kp.a12 = sin(keypoints_1[kp_num].angle*M_PI/180.0);
                               temp_kp1[kp_num].det_kp.a21 = -sin(keypoints_1[kp_num].angle*M_PI/180.0);
                               temp_kp1[kp_num].det_kp.a22 = cos(keypoints_1[kp_num].angle*M_PI/180.0);
-                              temp_kp1[kp_num].det_kp.s = keypoints_1[kp_num].size /   3.0; // 3.0 - because inside detector scale = level * patch_size -> ~ 3 sigma.
+                              temp_kp1[kp_num].det_kp.s = keypoints_1[kp_num].size /   det_par.ORBParam.PEParam.mrSize; // 3.0 - because inside detector scale = level * patch_size -> ~ 3 sigma.
                               //We need 1 sigma for MODS convention
                               temp_kp1[kp_num].det_kp.response = keypoints_1[kp_num].response;
                               temp_kp1[kp_num].type = DET_ORB;
@@ -1265,15 +1268,18 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
 
                     }
                   else {
-                      unsigned int kp_size = temp_kp1.size();
+
+                      unsigned int kp_size = temp_kp1_desc.size();
                       keypoints_1.reserve(kp_size);
+
                       for (unsigned int kp_num = 0; kp_num < kp_size; kp_num++) {
                           cv::KeyPoint temp_pt;
                           temp_pt.pt.x = temp_kp1_desc[kp_num].det_kp.x;
                           temp_pt.pt.y = temp_kp1_desc[kp_num].det_kp.y;
-                          temp_pt.octave = temp_kp1_desc[kp_num].det_kp.octave_number;
-                          temp_pt.angle = atan2( temp_kp1_desc[kp_num].det_kp.a12, temp_kp1_desc[kp_num].det_kp.a11);
-                          temp_pt.size = temp_kp1_desc[kp_num].det_kp.s  *  det_par.ORBParam.PEParam.mrSize;;
+                          temp_pt.octave = (int) MAX(0, log2(temp_kp1_desc[kp_num].det_kp.s));
+                          temp_pt.angle = atan2( temp_kp1_desc[kp_num].det_kp.a12, temp_kp1_desc[kp_num].det_kp.a11) * 180 / M_PI;
+                          temp_pt.size = temp_kp1_desc[kp_num].det_kp.s  *  det_par.ORBParam.PEParam.mrSize;
+
                           keypoints_1.push_back(temp_pt);
                         }
                       temp_img1.pixels.convertTo(CharImage, CV_8U);
@@ -1302,7 +1308,50 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
                           for (int jj = 0; jj < desc_size; jj++, descPtr++)
                             temp_kp1_desc[kp_num].desc.vec[jj] = (float) *descPtr;
                         }
+                      ReprojectRegions(temp_kp1_desc, temp_img1.H, OriginalImg.cols, OriginalImg.rows);
+
                     }
+                }
+              else if (curr_desc.compare("FREAK") == 0) //FREAK
+                {
+                  std::cout << "FREAK desc" << std::endl;
+                  cv::FREAK CurrentDescriptor = cv::FREAK();
+                  unsigned int kp_size = temp_kp1_desc.size();
+                  keypoints_1.reserve(kp_size);
+                  for (unsigned int kp_num = 0; kp_num < kp_size; kp_num++) {
+                      cv::KeyPoint temp_pt;
+                      temp_pt.pt.x = temp_kp1_desc[kp_num].det_kp.x;
+                      temp_pt.pt.y = temp_kp1_desc[kp_num].det_kp.y;
+                      temp_pt.octave = (int) MAX(0, log2(temp_kp1_desc[kp_num].det_kp.s));
+                      temp_pt.angle = atan2( temp_kp1_desc[kp_num].det_kp.a12, temp_kp1_desc[kp_num].det_kp.a11) * 180 / M_PI;
+                      temp_pt.size = temp_kp1_desc[kp_num].det_kp.s  *  5.192;
+                      keypoints_1.push_back(temp_pt);
+                    }
+                  temp_img1.pixels.convertTo(CharImage, CV_8U);
+                  CurrentDescriptor.compute(CharImage, keypoints_1, descriptors_1);
+                  kp_size = keypoints_1.size();
+                  int desc_size = descriptors_1.cols;
+
+                  temp_kp1_desc.resize(kp_size);
+
+                  for (int kp_num = 0; kp_num < kp_size; kp_num++) {
+                      temp_kp1_desc[kp_num].det_kp.x = keypoints_1[kp_num].pt.x;
+                      temp_kp1_desc[kp_num].det_kp.y = keypoints_1[kp_num].pt.y;
+                      temp_kp1_desc[kp_num].det_kp.a11 = cos(keypoints_1[kp_num].angle * M_PI / 180.0);
+                      temp_kp1_desc[kp_num].det_kp.a12 = sin(keypoints_1[kp_num].angle * M_PI / 180.0);
+                      temp_kp1_desc[kp_num].det_kp.a21 = -sin(keypoints_1[kp_num].angle * M_PI / 180.0);
+                      temp_kp1_desc[kp_num].det_kp.a22 = cos(keypoints_1[kp_num].angle * M_PI / 180.0);
+                      temp_kp1_desc[kp_num].det_kp.s = keypoints_1[kp_num].size / (5.192);
+                      temp_kp1_desc[kp_num].det_kp.response = keypoints_1[kp_num].response;
+                      temp_kp1_desc[kp_num].type = temp_kp1[0].type;
+                      temp_kp1_desc[kp_num].desc.type = DESC_FREAK;
+                      temp_kp1_desc[kp_num].desc.vec.resize(desc_size);
+
+                      unsigned char *descPtr = descriptors_1.ptr<unsigned char>(kp_num);
+                      for (int jj = 0; jj < desc_size; jj++, descPtr++)
+                        temp_kp1_desc[kp_num].desc.vec[jj] = (float) *descPtr;
+                    }
+                    ReprojectRegions(temp_kp1_desc, temp_img1.H, OriginalImg.cols, OriginalImg.rows);
                 }
 
               else if (curr_desc.compare("CLIDescriptor") == 0) //ResSIFT
@@ -1475,9 +1524,23 @@ void ImageRepresentation::SaveRegionsMichal(std::string fname, int mode) {
 
 
           if (kpfile.is_open()) {
-
+              int desc_dim = 0;
               int num_keys = GetDescriptorsNumber(current_desc_name);
-              kpfile << "128" << std::endl;
+              for (std::map<std::string, AffineRegionVectorMap>::const_iterator
+                   reg_it = RegionVectorMap.begin(); reg_it != RegionVectorMap.end(); ++reg_it) {
+                  for (AffineRegionVectorMap::const_iterator desc_it = reg_it->second.begin();
+                       desc_it != reg_it->second.end(); ++desc_it) {
+                      if (desc_it->first != current_desc_name) {
+                          continue;
+                        }
+                      int n_desc = desc_it->second.size();
+
+                      for (int i = 0; i < 1; i++) {
+                          AffineRegion ar = desc_it->second[i];
+                          desc_dim = ar.desc.vec.size();
+                          break;
+                        }}}
+              kpfile << desc_dim << std::endl;
               kpfile << num_keys << std::endl;
               if (num_keys == 0)
                 {
@@ -1485,7 +1548,7 @@ void ImageRepresentation::SaveRegionsMichal(std::string fname, int mode) {
                   kpfile.close();
                   continue;
                 }
-              int desc_dim;
+              //int desc_dim;
 
               for (std::map<std::string, AffineRegionVectorMap>::const_iterator
                    reg_it = RegionVectorMap.begin(); reg_it != RegionVectorMap.end(); ++reg_it) {

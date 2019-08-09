@@ -60,7 +60,7 @@ public:
                 int descSize=K_BYTES, uchar deltaThr=0, int nfeatures = 5000, bool allC1feats = false,
                 bool strictMaximum = false, int subPixPrecision = 0, bool gravityCenter = false,
                 int innerTstType = 0, int minArcLength = 2, int maxArcLength = 8, short ringsType = 4,
-                int binPattern = Binpat::OCV, float alpha = 0.5 );
+                int binPattern = Binpat::OCV, uchar blobThr = 10 );
 
     // returns the descriptor size in bytes
     int descriptorSize() const;
@@ -111,7 +111,7 @@ protected:
     CV_PROP_RW int maxArcLength;
     CV_PROP_RW short ringsType;
     CV_PROP_RW int binPattern;
-    CV_PROP_RW float alpha;
+    CV_PROP_RW uchar blobThr;
 
 };
 

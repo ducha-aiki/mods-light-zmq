@@ -316,14 +316,14 @@ static inline double getScaleDouble(int level, int firstLevel, double scaleFacto
 SORB::SORB(double _responseThr, float _scaleFactor, int _nlevels, int _edgeThreshold,
          int _epsilon, int _WTA_K, int _scoreType, int _patchSize, int _doNMS, int _descSize, uchar _deltaThr, int _nfeatures,
 		 bool _allC1feats , bool _strictMaximum, int _subPixPrecision , bool _gravityCenter, int _innerTstType, int _minArcLength,
-		 int _maxArcLength, short _ringsType, int _binPattern, float _alpha ) :
+		 int _maxArcLength, short _ringsType, int _binPattern, uchar _blobThr ) :
 		 responseThr(_responseThr), scaleFactor(_scaleFactor), nlevels(_nlevels),
 		 edgeThreshold(_edgeThreshold), epsilon(_epsilon), WTA_K(_WTA_K),
 		 scoreType(_scoreType), patchSize(_patchSize), doNMS(_doNMS),
 		 descSize(_descSize), deltaThr(_deltaThr), nfeatures(_nfeatures),
 		 allC1feats(_allC1feats), strictMaximum(_strictMaximum), subPixPrecision(_subPixPrecision), gravityCenter(_gravityCenter),
 		 innerTstType(_innerTstType), minArcLength(_minArcLength), maxArcLength(_maxArcLength), ringsType(_ringsType), 
-         binPattern(_binPattern), alpha(_alpha)
+         binPattern(_binPattern), blobThr(_blobThr)
 {}
 
 int SORB::descriptorSize() const
@@ -637,9 +637,8 @@ inline void mergeSaddlesAndBlobs(std::vector< SadKeyPoint > &  keypoints, int nF
             default:
                 std::cerr << "Unknown region type (0,1,2)" << std::endl;
         }
-
     }
-    // float alpha = (float)saddleKeypoints.size()/keypoints.size();
+    
     int saddleNum = (int)round(nFeatures*alpha);
     int blobNum = (int)round(nFeatures*(1-alpha));
 
@@ -670,13 +669,13 @@ void computeKeyPoints(const vector<Mat>& imagePyramid,
                              double responseThr, int epsilon, float scaleFactor,
                              int edgeThreshold, int patchSize, int scoreType, int doNMS, uchar deltaThr, int nfeatures,
 							 bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
-							 int minArcLength, int maxArcLength, short ringsType, float alpha )
+							 int minArcLength, int maxArcLength, short ringsType, uchar blobThr )
 {
 
 	int nlevels = (int)imagePyramid.size();
-#if false
-    printf("\nSADDLE detector parameters: \n   nLevels: %d, scaleFactor: %.1f, epsilon: %d, responseThr: %.2f, borderGab: %d, doNMS: %d\n   deltaThr: %d, nFeats: %d, allC1features: %d, strictMaxNMS: %d, subpixelMethod: %d\n   C1C2gravityCenter: %d, InnerTstMethod: %d, ScoreType: %d, minArc: %d, maxArc: %d\n   ringsType: %d, alpha: %3.2f\n",
-				nlevels, scaleFactor, epsilon, responseThr, edgeThreshold, doNMS, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, scoreType, minArcLength, maxArcLength, ringsType, alpha );
+#if true
+    printf("\nSADDLE detector parameters: \n   nLevels: %d, scaleFactor: %.1f, epsilon: %d, responseThr: %.2f, borderGab: %d, doNMS: %d\n   deltaThr: %d, nFeats: %d, allC1features: %d, strictMaxNMS: %d, subpixelMethod: %d\n   C1C2gravityCenter: %d, InnerTstMethod: %d, ScoreType: %d, minArc: %d, maxArc: %d\n   ringsType: %d, blobThr: %d\n",
+				nlevels, scaleFactor, epsilon, responseThr, edgeThreshold, doNMS, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, scoreType, minArcLength, maxArcLength, ringsType, blobThr );
 #endif
     vector<int> nfeaturesPerLevel(nlevels);
 
@@ -730,7 +729,7 @@ void computeKeyPoints(const vector<Mat>& imagePyramid,
                                  responseThr, deltaThr, scoreType,
 								 allC1feats, strictMaximum, subPixPrecision,
                                  gravityCenter, innerTstType, minArcLength,
-                                 maxArcLength );
+                                 maxArcLength, 10 );
         fd.detect2(imagePyramid[level], keypoints, respPyramid[level], maskPyramid[level]);
 
         
@@ -738,11 +737,10 @@ void computeKeyPoints(const vector<Mat>& imagePyramid,
         runByImageBorder(keypoints, imagePyramid[level].size(), edgeThreshold);
 
         //cull to the final desired level, using the new Harris scores or the original FAST scores.
-        if (level == 0) {
+        if (level == 0)
             featuresNum = nfeatures - taken_sum;
-          }
         
-        mergeSaddlesAndBlobs(keypoints, featuresNum, alpha);
+        retainBest(keypoints, featuresNum);
 
         taken_sum += (int)keypoints.size();
         needed_sum += nfeaturesPerLevel[level];
@@ -809,7 +807,7 @@ void substract_images( Mat iMatlab )
 	Mat iMemory = cv::imread( imgpath, IMREAD_GRAYSCALE );
 
 	Mat imDif;
-  std::cout << "iMatlab, cols: " << iMatlab.cols << ", rows: " << iMatlab.rows << std::endl;
+	std::cout << "iMatlab, cols: " << iMatlab.cols << ", rows: " << iMatlab.rows << std::endl;
 	std::cout << "iMemory, cols: " << iMemory.cols << ", rows: " << iMemory.rows << std::endl;
 
 	if (iMatlab.cols==iMemory.cols && iMatlab.rows==iMemory.rows)
@@ -932,7 +930,7 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
                          responseThr, epsilon, scaleFactor, edgeThreshold,
 						 patchSize, scoreType, doNMS, deltaThr, nfeatures,
 						 allC1feats, strictMaximum, subPixPrecision, gravityCenter,
-						 innerTstType, minArcLength, maxArcLength, ringsType, alpha);
+						 innerTstType, minArcLength, maxArcLength, ringsType, blobThr);
     }
     else
     {

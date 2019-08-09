@@ -64,12 +64,13 @@ enum descriptor_type {DESC_SIFT = 0,
                       DESC_ZMQ = 6,
                       DESC_CLI = 7,
                       DESC_ORB = 8,
+                      DESC_FREAK = 9,
                       DESC_UNKNOWN = 1000};
 
 
 const std::string _DescriptorNames [] = {"SIFT", "RootSIFT",
                                      "HalfSIFT", "HalfRootSIFT",
-                                     "InvSIFT", "ZMQ",  "CLIDescriptor", "ORB"};
+                                     "InvSIFT", "ZMQ",  "CLIDescriptor", "ORB", "FREAK"};
 
 const std::vector<std::string> DescriptorNames (_DescriptorNames,_DescriptorNames +
                                               sizeof(_DescriptorNames)/sizeof(*_DescriptorNames));

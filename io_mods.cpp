@@ -305,7 +305,7 @@ void GetSaddlePars(SaddleParams &pars, INIReader &reader,const char* section)
   pars.doNMS = reader.GetInteger(section, "doNMS", pars.doNMS);
   pars.edgeThreshold = reader.GetInteger(section, "edgeThreshold", pars.edgeThreshold);
   pars.descSize = reader.GetInteger(section, "descSize", pars.descSize);
-  pars.deltaThr = reader.GetInteger(section, "deltaThr", pars.deltaThr);
+  pars.deltaThr = (short) reader.GetInteger(section, "deltaThr", pars.deltaThr);
   pars.doBaumberg = reader.GetBoolean(section,"doBaumberg",pars.doBaumberg);
   pars.WTA_K = reader.GetInteger(section, "WTA_K", pars.WTA_K);
   pars.nfeatures = reader.GetInteger(section, "nfeatures", pars.nfeatures);
@@ -323,8 +323,12 @@ void GetSaddlePars(SaddleParams &pars, INIReader &reader,const char* section)
     pars.scoreType = cmp::SORB::ZERO_SCORE;
   else if ( scoretype == "NORM" )
     pars.scoreType = cmp::SORB::NORM_SCORE;
-  else if ( scoretype == "Hess" )
+  else if ( scoretype == "HESSIAN" )
     pars.scoreType = cmp::SORB::HESS_SCORE;
+  else if ( scoretype == "HARRIS" )
+    pars.scoreType = cmp::SORB::HARRIS_SCORE;
+  else if ( scoretype == "GM_DELTA" )
+    pars.scoreType = cmp::SORB::GM_DELTA_SCORE;
 
 
   pars.allC1feats = reader.GetBoolean(section,"allC1feats",pars.allC1feats);
@@ -337,7 +341,7 @@ void GetSaddlePars(SaddleParams &pars, INIReader &reader,const char* section)
 
   pars.ringsType = (short) reader.GetInteger(section, "ringsType", pars.ringsType);
   pars.binPattern = reader.GetInteger(section, "binPattern", pars.binPattern);
-  pars.saddle_perc = reader.GetDouble(section, "saddle_perc", pars.saddle_perc);
+  pars.blobThr = (short)reader.GetInteger(section, "blobThr", pars.blobThr);
 
 }
 

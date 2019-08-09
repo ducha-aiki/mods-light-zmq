@@ -42,12 +42,12 @@ int main( int argc, char** argv )
 	int epsilon, nlevels, edgeThreshold, doNMS, scoreType, descSize, nfeatures, subPixPrecision, innerTstType, minArcLength, maxArcLength, binPattern;
 	bool showVis, savefile, allC1feats, strictMaximum, gravityCenter;
 	double responseThr, scaleFactor;
-	uchar deltaThr;
+	uchar deltaThr, blobThr;
 	short ringsType;
 	bool saveDeltas = true;
 	char deltaoutpath[] = "./outputs/deltas.txt";
 	char* ptrdeltapath = deltaoutpath;
-	float alpha;
+
 
 	parse_opt( argc, argv, opt );
 
@@ -169,17 +169,10 @@ int main( int argc, char** argv )
 	else
 		binPattern = Binpat::OCV;
 
-	if( opt->getValue( 'a' ) != NULL  || opt->getValue( "alpha" ) != NULL  )
-	{
-		alpha = atof(opt->getValue( 'a' ));
-		printf("Reading value from terminal: %3.2f\n", alpha);
-	}
+	if( opt->getValue( 'a' ) != NULL  || opt->getValue( "blobThr" ) != NULL  )
+		blobThr = atoi(opt->getValue( 'a' ));
 	else
-	{
-		alpha = 0.5f;
-		printf("Taking default: %3.2f\n", alpha);
-	}
-	
+		blobThr = 10;
 
 	delete opt;
 
@@ -194,7 +187,7 @@ int main( int argc, char** argv )
 
 	cmp::SORB detector(responseThr, scaleFactor, nlevels, edgeThreshold, epsilon, 2, scoreType, 31,
 						doNMS, descSize, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision,
-						gravityCenter, innerTstType, minArcLength, maxArcLength, ringsType, binPattern, alpha );
+						gravityCenter, innerTstType, minArcLength, maxArcLength, ringsType, binPattern, blobThr );
 
 	vector<cmp::SadKeyPoint> kpts;
 	Mat dcts, mask;
@@ -259,7 +252,7 @@ void parse_opt( int argc, char* argv[], AnyOption * opt )
 {
 	/* USAGE/HELP   */
 	opt->addUsage( "" );
-	opt->addUsage( "Usage: " );
+	opt->addUsage( "Usage:  " );
 	opt->addUsage( "" );
 	opt->addUsage( " -h  --help  		Displays usage of the function " );
 	opt->addUsage( " -i  --image  		Input image to be processed " );
@@ -270,7 +263,7 @@ void parse_opt( int argc, char* argv[], AnyOption * opt )
 	opt->addUsage( " -y  --scoretype  	Feature response function for ranking and NMS. (0)zeros, (1) delta, (2) sum of abs, (3) avg of abs, (4) norm, (5) Hessian, (6) minus Harris, and (7) Geo. mean delta (Default 1) " );
 	opt->addUsage( " -g  --gab  		Gab in the border of the image for computing feats and descriptors (Default 3) " );
 	opt->addUsage( " -s  --scalefac		Scale factor from one level to the next one (Default 1.3) " );
-	opt->addUsage( " -a  --alpha		Alpha value is the weighting factor of the number of Saddle points as complement of the blob points. [0.0,1.0] (Default 0.5)" );
+	opt->addUsage( " -a  --blobthr		Minimum intensity difference between blob rings (Default 10)" );
 	opt->addUsage( " -n  --nms  		Option for non maximum suppression (0) without, (1) levelwise only, (2) 3D nms (Default 1) " );
 	opt->addUsage( " -f  --feats  		Maximum number of features (if NMS=0 then all detections will be passed out) " );
 	opt->addUsage( " -d  --delta  		Threshold for minimum delta allowed in the regions (default 0, the response function selected in )" );
@@ -279,7 +272,7 @@ void parse_opt( int argc, char* argv[], AnyOption * opt )
 	opt->addUsage( " -x  --innertype  	Inner circle test type. (0) baseline, (1) extension positions only, (2) extension sum, (3) extension avg., (4) extension sqrt 2." );
 	opt->addUsage( " -q  --minarc		Minimum arc length for the outer circle test (suggested from 2 to 3)." );
 	opt->addUsage( " -u  --maxarc		Maximum arc length for the outer circle test (suggested from 5 to 8)." );
-	opt->addUsage( " -j  --ringstype  	Type of rings configuration for the inner and outer tests. (3) TYPE_SADDLE_CENTRAL_PIXEL, (4) TYPE_SADDLE_INNER_PATTERN, (5) TYPE_SHADDLE, (6) TYPE_SADDLE_CONDITIONED, (7) TYPE_BLOB_CONDITIONED, (8)TYPE_SADDLE_BLOB. (Default 4)" );
+	opt->addUsage( " -j  --ringstype  	Type of rings configuration for the inner and outer tests. (3) TYPE_SADDLE_CENTRAL_PIXEL, (4) TYPE_SADDLE_INNER_PATTERN, (5) TYPE_SHADDLE, (6) TYPE_SADDLE_CONDITIONED, (7) TYPE_BLOB_CONDITIONED, (8) TYPE_SADDLE_BLOB, (9) TYPE_BLOB_CONDITIONED_OUTERTEST. (Default 4)" );
 	opt->addUsage( " -b  --binpattern  	Binary pattern for fBRIEF descriptor. (0) ORB_GV, (1) ORB_ORIENTED, (2) Saddle_GV, (3) Saddle_ORIENTED, (4) SURF_GV, (5) SURF_ORIENTED, (6) OCV. (Default 6)" );
 	opt->addUsage( " -v  --visu  		Flag for visualizing the image features " );
 	opt->addUsage( " -c  --c1feat		Flag to pass all features that fulfill inner circle condition. Feature score is contrast (delta)" );
@@ -297,7 +290,7 @@ void parse_opt( int argc, char* argv[], AnyOption * opt )
 	opt->setOption(  "scoretype",  'y' );
 	opt->setOption(  "gab", 	'g' );
 	opt->setOption(  "scalefac",'s' );
-	opt->setOption(  "alpha", 'a' );
+	opt->setOption(  "blobthr", 'a' );
 	opt->setOption(  "nms", 	'n' );
 	opt->setOption(  "feats", 	'f' );
 	opt->setOption(  "delta", 	'd' );

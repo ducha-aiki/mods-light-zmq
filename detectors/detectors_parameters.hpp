@@ -38,6 +38,8 @@ struct ORBParams
         firstLevel = 0;
         WTA_K=2;
         doNMS=1;
+        PEParam.mrSize = 2.0 * 9.6875; // 2 becuase internal ORB size is diameter, not radius.
+        PEParam.patchSize = 31;
         //    patchSize=31;
         //    mrSize = 3.0*sqrt(3.0);
         //    FastPatchExtraction = false;
@@ -53,7 +55,7 @@ struct SaddleParams{
     int epsilon;
     int pyrLevels;
     double scalefac;
-    int deltaThr;
+    uchar deltaThr;
     int edgeThreshold;
     int descSize;
     int WTA_K;
@@ -69,7 +71,7 @@ struct SaddleParams{
     int maxArcLength;
     short ringsType;
     int binPattern;
-    float saddle_perc; //alpha
+    uchar blobThr; //alpha
     PatchExtractionParams PEParam;
     SaddleParams() {
         allC1feats = false;
@@ -96,7 +98,7 @@ struct SaddleParams{
         maxArcLength = 8;
         ringsType = 4;
          binPattern = Binpat::OCV;
-         saddle_perc = 0.5;
+         blobThr = 10;
     }
 };
 
