@@ -193,7 +193,7 @@ void crossprod_st(double *out, const double *a, const double *b, int st)
 }
 
 
-double det3 (double *A)
+double det3 (const double *A)
 {
    double r;
    r = (A[0]*A[4]*A[8] + A[2]*A[3]*A[7] + A[1]*A[5]*A[6]);

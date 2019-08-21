@@ -64,12 +64,50 @@ Score exp_iterFcustom(double *u, int len, int *inliers, int * inl2, double th, d
 Score exp_inFranicustom (double *u, int len, int *inliers, int ninl,
              double th, double **errs, double *buffer,
              double *F, int * samidx, int * iterID, unsigned inlLimit, double *resids,exFDsPtr EXFDS1,FDsPtr FDS1);
+
+
 #ifdef __cplusplus
 extern "C"
 #endif
-int exp_ransacFcustom(double *u, int len, double th, double conf, int max_sam,
+int exp_ransacFcustomLAF(double *u, double *u_1, double *u_2,int len, double th,  double laf_coef, double conf, int max_sam,
             double *F, unsigned char * inl,
-            int * data_out, int do_lo, unsigned inlLimit, double **resids, double* H_best, int* Ih,exFDsPtr EXFDS1,FDsPtr FDS1, int doSymCheck);
+            int * data_out, int do_lo, unsigned inlLimit, double **resids, double* H_best, int* Ih,exFDsPtr EXFDS1, FDsPtr FDS1, FDsidxPtr FDS1idx,  double SymCheck_th);
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void FDs (const double *u, const double *F, double *p, int len);
+
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void FDsSym (const double *u, const double *F, double *p, int len);
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void FDsidx (const double *mu, const double *F, double *p, int len,  int *idx, int siz);
+
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void FDsSymidx (const double *mu, const double *F, double *p, int len,  int *idx, int siz);
+
+
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void exFDs (const double *u, const double *F, double *p, double *w, int len);
+
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void exFDsSym (const double *u, const double *F, double *p, double *w, int len);;
+
 
 #endif // _EXP_RANSAC_RAN_F
 

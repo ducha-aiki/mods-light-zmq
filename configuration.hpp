@@ -8,7 +8,7 @@
 #include <vector>
 #include <string>
 
-#define WITH_ORSA
+//#define WITH_ORSA
 
 
 //verificator types

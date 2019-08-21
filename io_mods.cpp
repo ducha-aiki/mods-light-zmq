@@ -441,7 +441,7 @@ void GetRANSACPars(RANSACPars &pars, INIReader &reader,const char* section)
   pars.max_samples = reader.GetInteger(section, "max_samples", pars.max_samples);
   pars.localOptimization = reader.GetInteger(section, "localOptimization", pars.localOptimization);
   pars.LAFCoef = reader.GetInteger(section, "LAFcoef", pars.LAFCoef);
-  pars.HLAFCoef = reader.GetInteger(section, "HLAFcoef", pars.HLAFCoef);
+  //pars.HLAFCoef = reader.GetInteger(section, "HLAFcoef", pars.HLAFCoef);
   pars.doSymmCheck = reader.GetInteger(section, "doSymmCheck", pars.doSymmCheck);
   std::vector< std::string> temp_str;
   reader.GetStringVector(section, "ErrorType",temp_str);
@@ -449,7 +449,13 @@ void GetRANSACPars(RANSACPars &pars, INIReader &reader,const char* section)
     pars.errorType = SAMPSON;
   else if (temp_str[0].compare("SymmMax")==0)
     pars.errorType = SYMM_MAX;
-  else //if (temp_str[0].compare("SymmSum")==0)
+  else if (temp_str[0].compare("SymmMaxSq")==0)
+    pars.errorType = SYMM_SQ_MAX;
+  else if (temp_str[0].compare("SymmSumSq")==0)
+    pars.errorType = SYMM_SQ_SUM;
+  else if (temp_str[0].compare("SymmSum")==0)
+    pars.errorType = SYMM_SUM;
+  else
     pars.errorType = SYMM_SUM;
   //pars.useF = reader.GetInteger(section, "useFmatrix", pars.useF);
 }

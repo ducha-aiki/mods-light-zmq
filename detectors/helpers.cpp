@@ -719,7 +719,7 @@ Mat gaussianBlur(const Mat input, float sigma)
   Mat ret(input.rows, input.cols, input.type());
   int size = (int)(2.0 * 3.0 * sigma + 1.0);
   if (size % 2 == 0) size++;
-  GaussianBlur(input, ret, cv::Size(size, size), sigma, sigma, cv::BORDER_REPLICATE);
+  cv::GaussianBlur(input, ret, cv::Size(size, size), sigma, sigma, cv::BORDER_REPLICATE);
   return ret;
 }
 
@@ -727,7 +727,7 @@ void gaussianBlurInplace(Mat &inplace, float sigma)
 {
   int size = (int)(2.0 * 3.0 * sigma + 1.0);
   if (size % 2 == 0) size++;
-  GaussianBlur(inplace, inplace, cv::Size(size, size), sigma, sigma, cv::BORDER_REPLICATE);
+  cv::GaussianBlur(inplace, inplace, cv::Size(size, size), sigma, sigma, cv::BORDER_REPLICATE);
 }
 
 Mat doubleImage(const Mat &input)

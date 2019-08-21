@@ -50,6 +50,19 @@ void FDsSym (const double *u, const double *F, double *p, int len);
 #ifdef __cplusplus
 extern "C"
 #endif
+void FDsidx (const double *mu, const double *F, double *p, int len,  int *idx, int siz);
+
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void FDsSymidx (const double *mu, const double *F, double *p, int len,  int *idx, int siz);
+
+
+
+#ifdef __cplusplus
+extern "C"
+#endif
 void FDsfull (const double *u, const double *F, double *p, int len);
 
 

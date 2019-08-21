@@ -304,7 +304,7 @@ int main(int argc, char **argv)
 
                 //tentatives["AllRANSAC"] = tentatives["All"];
                 log1.Tentatives1stRANSAC = LORANSACFiltering(tentatives["All"], tentatives["AllRANSAC"],
-                    tentatives["AllRANSAC"].H,Config1.RANSACParam);
+                    tentatives["AllRANSAC"].model,Config1.RANSACParam);
                 if (VERB) std::cerr << log1.Tentatives1stRANSAC << " RANSAC matches are identified in "
                                     << time1<< " seconds" << endl;
 
@@ -324,7 +324,7 @@ int main(int argc, char **argv)
             if (VERB) std::cerr << "LO-RANSAC(homography) verification is used..." << endl;
             log1.TrueMatch1st =  LORANSACFiltering(tentatives["All"],
                 verified_coors["All"],
-                verified_coors["All"].H,
+                verified_coors["All"].model,
                 Config1.RANSACParam);
             log1.InlierRatio1st = (double) log1.TrueMatch1st / (double) log1.Tentatives1st;
             if (VERB) std::cerr << log1.TrueMatch1st << " RANSAC correspondences got" << endl;
@@ -335,7 +335,7 @@ int main(int argc, char **argv)
             if (VERB) std::cerr << "LO-RANSAC(epipolar) verification is used..." << endl;
             log1.TrueMatch1st =  LORANSACFiltering(tentatives["All"],
                 verified_coors["All"],
-                verified_coors["All"].H,
+                verified_coors["All"].model,
                 Config1.RANSACParam);
             log1.InlierRatio1st = (double) log1.TrueMatch1st / (double) log1.Tentatives1st;
             break;
@@ -346,7 +346,7 @@ int main(int argc, char **argv)
             if (VERB) std::cerr << "ORSA(epipolar) verification is used..." << endl;
             log1.TrueMatch1st =  ORSAFiltering(tentatives["All"],
                 verified_coors["All"],
-                verified_coors["All"].H,
+                verified_coors["All"].model,
                 Config1.RANSACParam,(img1.cols+img2.cols)/2,
                 (img1.rows+img2.rows)/2);
             log1.InlierRatio1st = (double) log1.TrueMatch1st / (double) log1.Tentatives1st;
@@ -405,7 +405,7 @@ int main(int argc, char **argv)
           ofstream fileH(argv[Tmin+2]);
           //ofstream fileH("Hmatrix.txt");
           if (fileH.is_open())
-            WriteH(verified_coors["All"].H,fileH);
+            WriteH(verified_coors["All"].model,fileH);
           fileH.close();
         }
       else
@@ -413,7 +413,7 @@ int main(int argc, char **argv)
           ofstream fileH(argv[Tmin+2]);
           //ofstream fileH("Fmatrix.txt");
           if (fileH.is_open())
-            WriteH(verified_coors["All"].H,fileH);
+            WriteH(verified_coors["All"].model,fileH);
           fileH.close();
         }
     }
@@ -454,7 +454,7 @@ int main(int argc, char **argv)
           std::cerr << " Writing images with matches..." ;
           cv::Mat img_out1s, img_out2s;
 
-          cv::Mat h1cv(3,3,CV_64F,verified_coors["All"].H);
+          cv::Mat h1cv(3,3,CV_64F,verified_coors["All"].model);
           cv::Mat h1inv(3,3,CV_64F);
           cv::invert(h1cv,h1inv,DECOMP_LU);
 
@@ -483,7 +483,7 @@ int main(int argc, char **argv)
           {
             cv::Mat img_out1s, img_out2s,img_out1sm, img_out2sm;
 
-            cv::Mat h1cv(3,3,CV_64F,verified_coors["All"].H);
+            cv::Mat h1cv(3,3,CV_64F,verified_coors["All"].model);
             cv::Mat h1inv(3,3,CV_64F);
             cv::invert(h1cv,h1inv,DECOMP_LU);
 

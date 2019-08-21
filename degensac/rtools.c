@@ -159,7 +159,7 @@ void multirsampleT (double *data, int dat_siz, int dps,
 /*Indexes of inliers with error lower than given threshold. Returns RANSAC score.*/
 Score inlidxs (const double * err, int len, double th, int * inl) {
   unsigned i;
-  Score s = {0,0};
+  Score s = {0,0,0,0};
   for (i = 0; i < len; ++i) {
       s.J += truncQuad(err[i], th);
       if (err[i] <= th) {

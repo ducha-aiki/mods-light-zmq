@@ -70,11 +70,11 @@ typedef std::vector<Keypoint4OverlapMatch> Keypoint4OverlapMatchList;
 struct TentativeCorrespList
 {
   std::vector<TentativeCorresp> TCList;
-  double H[3*3]; // by default H[i] = -1, if no H-estimation done
+  double model[3*3]; // by default H[i] = -1, if no H-estimation done
   TentativeCorrespList()
   {
     for (int i=0; i<9; i++)
-      H[i] = -1;
+      model[i] = -1;
   }
 
 };
@@ -83,16 +83,26 @@ struct TentativeCorrespList
 struct TentativeCorrespListExt : TentativeCorrespList
 {
   std::vector<TentativeCorrespExt> TCList;
-  double H[3*3]; // by default H[i] = -1, if no H-estimation done
+  double model[3*3]; // by default H[i] = -1, if no H-estimation done
   TentativeCorrespListExt()
   {
     for (int i=0; i<9; i++)
-      H[i] = -1;
+      model[i] = -1;
   }
 
 };
 
-enum RANSAC_error_t {SAMPSON,SYMM_MAX,SYMM_SUM};
+//enum RANSAC_error_t {SAMPSON,SYMM_MAX,SYMM_SUM};
+
+enum RANSAC_error_t_h {SAMPSON = 0,
+                     SYMM_SQ_MAX = 1,
+                     SYMM_MAX = 2,
+                     SYMM_SQ_SUM = 3,
+                     SYMM_SUM = 4};
+
+enum RANSAC_error_t_f {SAMPSON_F = 0,
+    SYMM_EPI_F = 1};
+
 
 struct MatchPars
 {
@@ -144,8 +154,7 @@ struct RANSACPars
   int max_samples;
   int localOptimization;
   double LAFCoef;
-  double HLAFCoef;
-  RANSAC_error_t errorType;
+  int errorType;
   int doSymmCheck;
   int justMarkOutliers;
   RANSACPars()
@@ -156,7 +165,6 @@ struct RANSACPars
     max_samples = 1e5;
     localOptimization = 1;
     LAFCoef = 3.0;
-    HLAFCoef = 10.0;
     errorType = SYMM_SUM;
     doSymmCheck = 0;
     justMarkOutliers=0;

@@ -21,6 +21,11 @@ typedef struct
     unsigned I;
     /* MSAC scoring, truncated quadratic gain function */
     double J;
+    /* number of inliers in both ways */
+    unsigned Is;
+    /* number of LAF-consistent inliers in both ways */
+    unsigned Ilafs;
+
 } Score;
 
 #define SC_R 1

@@ -29,6 +29,6 @@ void cov_mat(double *Cv, const double * Z, int len, int siz);
 
 void crossprod_st(double *out, const double *a, const double *b, int st);
 
-double det3 (double *A);
+double det3 (const double *A);
 
 #endif /* __UTOOLS_H_ */

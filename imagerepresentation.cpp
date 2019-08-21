@@ -198,13 +198,13 @@ void saveKP_KM_format_binary(AffineKeypoint &ak, std::ostream &s) {
 void saveAR(AffineRegion &ar, std::ostream &s) {
   saveKPBench(ar.reproj_kp,s);
   s << " " << ar.desc.vec.size() << " ";
-  for (unsigned int i = 0; i < ar.desc.vec.size(); ++i) {
+  for ( size_t i = 0; i < ar.desc.vec.size(); ++i) {
       s << ar.desc.vec[i] << " ";
     }
 }
 void saveAR_KM_format(AffineRegion &ar, std::ostream &s) {
   saveKP_KM_format(ar.reproj_kp,s);
-  for (unsigned int i = 0; i < ar.desc.vec.size(); i++) {
+  for ( size_t i = 0; i < ar.desc.vec.size(); i++) {
       s << ar.desc.vec[i] << " ";
     }
   s << std::endl;
@@ -215,13 +215,13 @@ void saveARBench(AffineRegion &ar, std::ostream &s, std::ostream &s2) {
 }
 void saveARMichal(AffineRegion &ar, std::ostream &s) {
   saveKPMichal(ar.reproj_kp,s);
-  for (unsigned int i = 0; i < ar.desc.vec.size(); ++i) {
+  for ( size_t i = 0; i < ar.desc.vec.size(); ++i) {
       s << ar.desc.vec[i] << " ";
     }
 }
 void saveARMichalBinary(AffineRegion &ar, std::ostream &s) {
   saveKPMichalBin(ar.reproj_kp,s);
-  for (unsigned int i = 0; i < ar.desc.vec.size(); ++i) {
+  for ( size_t i = 0; i < ar.desc.vec.size(); ++i) {
       int desc = (int)MAX(0,MIN(ar.desc.vec[i], 255));
       unsigned char desc1 = (unsigned char) (desc);
       s.write((char *)&desc1, sizeof(unsigned char));
@@ -229,7 +229,7 @@ void saveARMichalBinary(AffineRegion &ar, std::ostream &s) {
 }
 void saveARMikBinary(AffineRegion &ar, std::ostream &s) {
   saveKP_KM_format_binary(ar.reproj_kp, s);
-  for (unsigned int i = 0; i < ar.desc.vec.size(); ++i) {
+  for ( size_t i = 0; i < ar.desc.vec.size(); ++i) {
       float desc = (float)MAX(0,MIN(ar.desc.vec[i], 255));
       s.write((char *)&desc, sizeof(float));
     }
@@ -247,7 +247,7 @@ void loadAR(AffineRegion &ar, std::istream &s) {
   int size1;
   s >> size1;
   ar.desc.vec.resize(size1);
-  for (unsigned int i = 0; i < ar.desc.vec.size(); ++i) {
+  for ( size_t i = 0; i < ar.desc.vec.size(); ++i) {
       s >> ar.desc.vec[i];
     }
 }
@@ -326,7 +326,7 @@ void ImageRepresentation::SetImg(cv::Mat _in_img, std::string _name)
 
 descriptor_type ImageRepresentation::GetDescriptorType(std::string desc_name)
 {
-  for (unsigned int i=0; i< DescriptorNames.size(); i++)
+  for ( size_t i=0; i< DescriptorNames.size(); i++)
     if (DescriptorNames[i].compare(desc_name)==0)
       return static_cast<descriptor_type>(i);
   return DESC_UNKNOWN;
@@ -334,7 +334,7 @@ descriptor_type ImageRepresentation::GetDescriptorType(std::string desc_name)
 
 detector_type ImageRepresentation::GetDetectorType(std::string det_name)
 {
-  for (unsigned int i=0; i< DetectorNames.size(); i++)
+  for ( size_t i=0; i< DetectorNames.size(); i++)
     if (DetectorNames[i].compare(det_name)==0)
       return static_cast<detector_type>(i);
   return DET_UNKNOWN;
@@ -456,7 +456,7 @@ cv::Mat ImageRepresentation::GetDescriptorsMatByDetDesc(const std::string desc_n
             {
               AffineRegionVector *currentDescVector = &(desc_it->second);
               unsigned int curr_size = currentDescVector->size();
-              for (unsigned int i = 0; i<curr_size; i++, reg_number++)
+              for ( size_t i = 0; i<curr_size; i++, reg_number++)
                 {
                   float* Row = descriptors.ptr<float>(reg_number);
                   AffineRegion curr_region = (*currentDescVector)[i];
@@ -476,7 +476,7 @@ cv::Mat ImageRepresentation::GetDescriptorsMatByDetDesc(const std::string desc_n
             {
               AffineRegionVector *currentDescVector = &(desc_it->second);
               unsigned int curr_size = currentDescVector->size();
-              for (unsigned int i = 0; i<curr_size; i++, reg_number++)
+              for ( size_t i = 0; i<curr_size; i++, reg_number++)
                 {
                   float* Row = descriptors.ptr<float>(reg_number);
                   AffineRegion curr_region = (*currentDescVector)[i];
@@ -512,7 +512,7 @@ cv::Mat ImageRepresentation::GetDescriptorsMatByDetDesc(std::vector<Point2f> &co
             {
               AffineRegionVector *currentDescVector = &(desc_it->second);
               unsigned int curr_size = currentDescVector->size();
-              for (unsigned int i = 0; i<curr_size; i++, reg_number++)
+              for ( size_t i = 0; i<curr_size; i++, reg_number++)
                 {
                   float* Row = descriptors.ptr<float>(reg_number);
                   AffineRegion curr_region = (*currentDescVector)[i];
@@ -536,7 +536,7 @@ cv::Mat ImageRepresentation::GetDescriptorsMatByDetDesc(std::vector<Point2f> &co
             {
               AffineRegionVector *currentDescVector = &(desc_it->second);
               unsigned int curr_size = currentDescVector->size();
-              for (unsigned int i = 0; i<curr_size; i++, reg_number++)
+              for ( size_t i = 0; i<curr_size; i++, reg_number++)
                 {
                   float* Row = descriptors.ptr<float>(reg_number);
                   AffineRegion curr_region = (*currentDescVector)[i];
@@ -590,7 +590,7 @@ AffineRegionVector ImageRepresentation::GetAffineRegionVector(std::string desc_n
       if (desc_it != regions_it->second.end() )
         {
           AffineRegionVector *currentDescVector = &(desc_it->second);
-          for (unsigned int i = 0; i < n_regs; i++)
+          for ( size_t i = 0; i < n_regs; i++)
             regions.push_back((*currentDescVector)[idxs[i]]);
         }
     }
@@ -599,9 +599,9 @@ AffineRegionVector ImageRepresentation::GetAffineRegionVector(std::string desc_n
 }
 AffineRegionVector ImageRepresentation::GetAffineRegionVector(std::string desc_name, std::string det_name)
 {
-  unsigned int n_regs = GetDescriptorsNumber(desc_name,det_name);
+  size_t n_regs = GetDescriptorsNumber(desc_name,det_name);
   AffineRegionVector regions;
-  regions.reserve(n_regs);
+  regions.reserve(2*n_regs);
 
   std::map<std::string, AffineRegionVectorMap>::iterator regions_it;
   AffineRegionVectorMap::iterator desc_it;
@@ -613,7 +613,7 @@ AffineRegionVector ImageRepresentation::GetAffineRegionVector(std::string desc_n
           if (desc_it != regions_it->second.end() )
             {
               AffineRegionVector *currentDescVector = &(desc_it->second);
-              for (unsigned int i = 0; i < n_regs; i++)
+              for ( size_t i = 0; i < n_regs; i++)
                 regions.push_back((*currentDescVector)[i]);
             }
         }
@@ -626,7 +626,7 @@ AffineRegionVector ImageRepresentation::GetAffineRegionVector(std::string desc_n
           if (desc_it != regions_it->second.end() )
             {
               AffineRegionVector *currentDescVector = &(desc_it->second);
-              for (unsigned int i = 0; i < n_regs; i++)
+              for ( size_t i = 0; i < currentDescVector->size(); i++)
                 regions.push_back((*currentDescVector)[i]);
             }
         }
@@ -672,9 +672,9 @@ void ImageRepresentation::AddRegions(AffineRegionVectorMap &RegionsMapToAdd, std
 void ImageRepresentation::AddRegionsToList(AffineRegionList &kp_list, AffineRegionList &new_kps)
 {
   int size = (int)kp_list.size();
-  unsigned int new_size = size + new_kps.size();
+//  unsigned int new_size = size + new_kps.size();
   AffineRegionList::iterator ptr = new_kps.begin();
-  for (unsigned int i=size; i< new_size; i++, ptr++)
+  for ( size_t i=0; i< new_kps.size(); i++, ptr++)
     {
       AffineRegion temp_reg = *ptr;
       temp_reg.id += size;
@@ -724,7 +724,7 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
           bool SIFT_like_desc = true;
           bool HalfSIFT_like_desc = false;
 
-          for (unsigned int i_desc=0; i_desc < synth_par[curr_det][synth].descriptors.size();i_desc++) {
+          for ( size_t i_desc=0; i_desc < synth_par[curr_det][synth].descriptors.size();i_desc++) {
               std::string curr_desc = synth_par[curr_det][synth].descriptors[i_desc];
               if (curr_desc.find("Half") != std::string::npos) {
                   HalfSIFT_like_desc = true;
@@ -920,7 +920,7 @@ void ImageRepresentation::SynthDetectDescribeKeypoints (IterationViewsynthesisPa
             }
           temp_kp_map["None"] = temp_kp1;
 
-          for (unsigned int i_desc=0; i_desc < synth_par[curr_det][synth].descriptors.size();i_desc++) {
+          for ( size_t i_desc=0; i_desc < synth_par[curr_det][synth].descriptors.size();i_desc++) {
               std::string curr_desc = synth_par[curr_det][synth].descriptors[i_desc];
               AffineRegionVector temp_kp1_desc;
               AffineRegionVector dsp_desc;

@@ -14,6 +14,8 @@ void u2h(const double *u, const int *inl, int len, double *H, double * buffer);
 
 void pinvJ (double a, double b, double c, double d, double e, double *pJ);
 
+
+
 #ifdef __cplusplus
 extern "C"
 #endif
@@ -23,13 +25,26 @@ void HDs(const double *lin, const double * u,
 #ifdef __cplusplus
 extern "C"
 #endif
-void HDsSym(const double *lin, const double * u,
+void HDsSymSumSq(const double *lin, const double * u,
+            const double *H, double *p, int len);
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void HDsSymSum(const double *lin, const double * u,
             const double *H, double *p, int len);
 
 #ifdef __cplusplus
 extern "C"
 #endif
 void HDsSymMax(const double *lin, const double * u,
+            const double *H, double *p, int len);
+
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void HDsSymMaxSq(const double *lin, const double * u,
             const double *H, double *p, int len);
 
 
@@ -45,31 +60,60 @@ extern "C"
 void HDsidx(const double *lin, const double * mu,
             const double *H, double *p, int len, int *idx, int siz);
 
+//!!!! The diffence between HDsi and HDsidx is that HDsi stores result into p[0..size] (so, just beginning of the array)
+//! while the HDsidx stores result into p[idx[0..size]] - stores in "correct" indexes
+
 #ifdef __cplusplus
 extern "C"
 #endif
-void HDsSymidx(const double *lin, const double * mu, const double *H,
+void HDsSymSumidx(const double *lin, const double * mu, const double *H,
                double *p, int len, int *idx, int siz);
 #ifdef __cplusplus
 extern "C"
 #endif
-void HDsiSym(const double *lin, const double * u6,
+void HDsSymSumSqidx(const double *lin, const double * mu, const double *H,
+               double *p, int len, int *idx, int siz);
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void HDsSymMaxidx(const double *lin, const double * mu, const double *H,
+               double *p, int len, int *idx, int siz);
+#ifdef __cplusplus
+extern "C"
+#endif
+void HDsSymMaxSqidx(const double *lin, const double * mu, const double *H,
+               double *p, int len, int *idx, int siz);
+
+/**/
+#ifdef __cplusplus
+extern "C"
+#endif
+void HDsiSymSum(const double *lin, const double * u6,
+          const double *H, double *p, int len, int *pts, int ni);
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void HDsiSymSumSq(const double *lin, const double * u6,
           const double *H, double *p, int len, int *pts, int ni);
 
 
-#ifdef __cplusplus
-extern "C"
-#endif
-void HDsSymidxMax(const double *lin, const double * mu, const double *H,
-               double *p, int len, int *idx, int siz);
 #ifdef __cplusplus
 extern "C"
 #endif
 void HDsiSymMax(const double *lin, const double * u6,
           const double *H, double *p, int len, int *pts, int ni);
 
+#ifdef __cplusplus
+extern "C"
+#endif
+void HDsiSymMaxSq(const double *lin, const double * u6,
+          const double *H, double *p, int len, int *pts, int ni);
 
 
 int all_Hori_valid (double * us, int *idx);
+void invertH(const double *H, double *Hinv);
+//int all_not_collinear(double * us, int *idx);
+//int HcloseToSingular(const double *h);
 
-int all_HoriR_valid (double * us, int *idx);
