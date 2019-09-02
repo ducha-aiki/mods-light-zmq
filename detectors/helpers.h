@@ -10,8 +10,8 @@
 #ifndef __HELPERS_H__
 #define __HELPERS_H__
 
-#include <opencv2/core/core.hpp>
 #include "structures.hpp"
+#include <opencv2/core.hpp>
 
 void solveLinear3x3(float *A, float *b);
 bool getEigenvalues(float a, float b, float c, float d, float &l1, float &l2);

@@ -10,4 +10,5 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 include_directories(.)
 
 add_library(helpers helpers.cpp)
+TARGET_LINK_LIBRARIES(helpers ${OpenCV_LIBS})
 

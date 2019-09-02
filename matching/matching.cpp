@@ -1047,7 +1047,7 @@ cv::Mat DrawRegions(const cv::Mat &in_img,
   cv::Mat out_img;
   double k_scale = 3.0;//3 sigma
   if (in_img.channels() == 1)
-    cv::cvtColor(in_img,out_img,CV_GRAY2RGB);
+    cv::cvtColor(in_img,out_img,cv::COLOR_RGB2GRAY);
   else
     out_img=in_img.clone();
 
@@ -1088,7 +1088,7 @@ cv::Mat DrawRegions(const cv::Mat &in_img,
                 false, 			// draw closed contour (i.e. joint end to start)
                 color1,// colour RGB ordering (here = green)
                 r1, 		        // line thickness
-                CV_AA, 0);
+                cv::LINE_AA, 0);
 
     }
   return out_img;
@@ -1144,11 +1144,11 @@ void DrawMatches(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat &out_img
       double *Hinv = (double*)h1inv.data;
 
       if (in_img1.channels() != 3)
-        cv::cvtColor(in_img1,out_tmp1,CV_GRAY2RGB);
+        cv::cvtColor(in_img1,out_tmp1,cv::COLOR_RGB2GRAY);
       else
         out_tmp1=in_img1.clone();
       if (in_img2.channels() != 3)
-        cv::cvtColor(in_img2,out_tmp2,CV_GRAY2RGB);
+        cv::cvtColor(in_img2,out_tmp2,cv::COLOR_RGB2GRAY);
       else
         out_tmp2=in_img2.clone();
 
@@ -1202,7 +1202,7 @@ void DrawMatches(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat &out_img
                         false, 			// draw closed contour (i.e. joint end to start)
                         color1,// colour RGB ordering (here = green)
                         r1, 		        // line thickness
-                        CV_AA, 0);
+                        cv::LINE_AA, 0);
               double B[9]= {k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a11, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a12, ptrOut->second.reproj_kp.x,
                             k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a21, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a22, ptrOut->second.reproj_kp.y,
                             0, 0, 1
@@ -1221,7 +1221,7 @@ void DrawMatches(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat &out_img
                         false, 			// draw closed contour (i.e. joint end to start)
                         color2,
                         r2, 		        // line thickness
-                        CV_AA, 0);
+                        cv::LINE_AA, 0);
 
             }
           /// Image 2
@@ -1245,7 +1245,7 @@ void DrawMatches(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat &out_img
                         false, 			// draw closed contour (i.e. joint end to start)
                         color1,// colour RGB ordering (here = green)
                         r1, 		        // line thickness
-                        CV_AA, 0);
+                        cv::LINE_AA, 0);
               double B[9]= {k_scale*ptrOut->first.reproj_kp.s*ptrOut->first.reproj_kp.a11, k_scale*ptrOut->first.reproj_kp.s*ptrOut->first.reproj_kp.a12, ptrOut->first.reproj_kp.x,
                             k_scale*ptrOut->first.reproj_kp.s*ptrOut->first.reproj_kp.a21, k_scale*ptrOut->first.reproj_kp.s*ptrOut->first.reproj_kp.a22, ptrOut->first.reproj_kp.y,
                             0, 0, 1
@@ -1265,7 +1265,7 @@ void DrawMatches(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat &out_img
                         false, 			// draw closed contour (i.e. joint end to start)
                         color2,
                         r2, 		        // line thickness
-                        CV_AA, 0);
+                        cv::LINE_AA, 0);
             }
         }
       /// Draw centers
@@ -1370,7 +1370,7 @@ void DrawMatches(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat &out_img
       roiImg1.copyTo(roiImgResult_Left); //Img1 will be on the left of imgResult
       roiImg2.copyTo(roiImgResult_Right); //Img2 will be on the right of imgResult
       //      if (out_tmp1.channels() < 3)
-      //          cv::cvtColor(out_tmp1.clone(),out_tmp1,CV_GRAY2RGB);
+      //          cv::cvtColor(out_tmp1.clone(),out_tmp1,cv::COLOR_RGB2GRAY);
 
 
       out_tmp2 = cv::Mat(in_img1.rows+in_img2.rows+sep, max(in_img1.cols,in_img2.cols),in_img2.type(),cv::Scalar(255,255,255));
@@ -1382,7 +1382,7 @@ void DrawMatches(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat &out_img
       roiImg2.copyTo(roiImgResult_Down); //Img2 will be on the right of imgResult
 
       //      if (out_img2.channels() < 3)
-      //        cv::cvtColor(out_tmp2.clone(),out_tmp2,CV_GRAY2RGB);
+      //        cv::cvtColor(out_tmp2.clone(),out_tmp2,cv::COLOR_RGB2GRAY);
 
       if(!DrawCentersOnly)
         {
@@ -1425,7 +1425,7 @@ void DrawMatches(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat &out_img
                         false, 			// draw closed contour (i.e. joint end to start)
                         color_corr,// colour RGB ordering (here = green)
                         r1, 		        // line thickness
-                        CV_AA, 0);
+                        cv::LINE_AA, 0);
 
               double A2[4]= {k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a11, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a12,
                              k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a21, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a22
@@ -1443,7 +1443,7 @@ void DrawMatches(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat &out_img
                         false, 			// draw closed contour (i.e. joint end to start)
                         color_corr,
                         r2, 		        // line thickness
-                        CV_AA, 0);
+                        cv::LINE_AA, 0);
 
 
             }
@@ -1472,7 +1472,7 @@ void DrawMatches(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat &out_img
                         false, 			// draw closed contour (i.e. joint end to start)
                         color_corr,// colour RGB ordering (here = green)
                         r1, 		        // line thickness
-                        CV_AA, 0);
+                        cv::LINE_AA, 0);
               double A2[4]= {k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a11, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a12,
                              k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a21, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a22
                             };
@@ -1489,7 +1489,7 @@ void DrawMatches(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat &out_img
                         false, 			// draw closed contour (i.e. joint end to start)
                         color_corr,
                         r2, 		        // line thickness
-                        CV_AA, 0);
+                        cv::LINE_AA, 0);
 
             }
         }
@@ -1615,11 +1615,11 @@ void DrawMatchesWithError(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat
       double *Hinv = (double*)h1inv.data;
 
       if (in_img1.channels() < 3)
-        cv::cvtColor(in_img1,out_tmp1,CV_GRAY2RGB);
+        cv::cvtColor(in_img1,out_tmp1,cv::COLOR_RGB2GRAY);
       else
         out_img1=in_img1.clone();
       if (in_img2.channels() < 3)
-        cv::cvtColor(in_img2,out_tmp2,CV_GRAY2RGB);
+        cv::cvtColor(in_img2,out_tmp2,cv::COLOR_RGB2GRAY);
       else
         out_img2=in_img2.clone();
 
@@ -1674,7 +1674,7 @@ void DrawMatchesWithError(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat
                         false, 			// draw closed contour (i.e. joint end to start)
                         color1,// colour RGB ordering (here = green)
                         r1, 		        // line thickness
-                        CV_AA, 0);
+                        cv::LINE_AA, 0);
               double B[9]= {k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a11, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a12, ptrOut->second.reproj_kp.x,
                             k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a21, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a22, ptrOut->second.reproj_kp.y,
                             0, 0, 1
@@ -1693,7 +1693,7 @@ void DrawMatchesWithError(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat
                         false, 			// draw closed contour (i.e. joint end to start)
                         color2,
                         r2, 		        // line thickness
-                        CV_AA, 0);
+                        cv::LINE_AA, 0);
 
             }
           /// Image 2
@@ -1716,7 +1716,7 @@ void DrawMatchesWithError(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat
                         false, 			// draw closed contour (i.e. joint end to start)
                         color1,// colour RGB ordering (here = green)
                         r1, 		        // line thickness
-                        CV_AA, 0);
+                        cv::LINE_AA, 0);
               double B[9]= {k_scale*ptrOut->first.reproj_kp.s*ptrOut->first.reproj_kp.a11, k_scale*ptrOut->first.reproj_kp.s*ptrOut->first.reproj_kp.a12, ptrOut->first.reproj_kp.x,
                             k_scale*ptrOut->first.reproj_kp.s*ptrOut->first.reproj_kp.a21, k_scale*ptrOut->first.reproj_kp.s*ptrOut->first.reproj_kp.a22, ptrOut->first.reproj_kp.y,
                             0, 0, 1
@@ -1736,7 +1736,7 @@ void DrawMatchesWithError(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat
                         false, 			// draw closed contour (i.e. joint end to start)
                         color2,
                         r2, 		        // line thickness
-                        CV_AA, 0);
+                        cv::LINE_AA, 0);
             }
         }
       /// Draw centers
@@ -1839,7 +1839,7 @@ void DrawMatchesWithError(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat
       roiImg1.copyTo(roiImgResult_Left); //Img1 will be on the left of imgResult
       roiImg2.copyTo(roiImgResult_Right); //Img2 will be on the right of imgResult
       if (out_img1.channels() !=3)
-        cv::cvtColor(out_tmp1.clone(),out_tmp1,CV_GRAY2RGB);
+        cv::cvtColor(out_tmp1.clone(),out_tmp1,cv::COLOR_RGB2GRAY);
 
 
       out_tmp2 = cv::Mat (in_img1.rows+in_img2.rows+sep, max(in_img1.cols,in_img2.cols),in_img1.type());
@@ -1850,7 +1850,7 @@ void DrawMatchesWithError(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat
       roiImg1.copyTo(roiImgResult_Up); //Img1 will be on the left of imgResult
       roiImg2.copyTo(roiImgResult_Down); //Img2 will be on the right of imgResult
       if (out_img2.channels() !=3)
-        cv::cvtColor(out_tmp2.clone(),out_tmp2,CV_GRAY2RGB);
+        cv::cvtColor(out_tmp2.clone(),out_tmp2,cv::COLOR_RGB2GRAY);
 
       if(!DrawCentersOnly)
         {
@@ -1890,7 +1890,7 @@ void DrawMatchesWithError(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat
                         false, 			// draw closed contour (i.e. joint end to start)
                         color_corr,// colour RGB ordering (here = green)
                         r1, 		        // line thickness
-                        CV_AA, 0);
+                        cv::LINE_AA, 0);
 
               double A2[4]= {k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a11, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a12,
                              k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a21, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a22
@@ -1908,7 +1908,7 @@ void DrawMatchesWithError(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat
                         false, 			// draw closed contour (i.e. joint end to start)
                         color_corr,
                         r2, 		        // line thickness
-                        CV_AA, 0);
+                        cv::LINE_AA, 0);
 
 
             }
@@ -1935,7 +1935,7 @@ void DrawMatchesWithError(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat
                         false, 			// draw closed contour (i.e. joint end to start)
                         color_corr,// colour RGB ordering (here = green)
                         r1, 		        // line thickness
-                        CV_AA, 0);
+                        cv::LINE_AA, 0);
               double A2[4]= {k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a11, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a12,
                              k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a21, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a22
                             };
@@ -1952,7 +1952,7 @@ void DrawMatchesWithError(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Mat
                         false, 			// draw closed contour (i.e. joint end to start)
                         color_corr,
                         r2, 		        // line thickness
-                        CV_AA, 0);
+                        cv::LINE_AA, 0);
 
             }
         }
@@ -2035,8 +2035,8 @@ void DrawMatchingsSimple(const cv::Mat &in_img, cv::Mat &out_img,const cv::Mat &
   cv::Mat tmpimage1;
   if (in_img.channels() !=3)
     {
-      cv::cvtColor(in_img,out_img,CV_GRAY2RGB);
-      cv::cvtColor(in_img,tmpimage1,CV_GRAY2RGB);
+      cv::cvtColor(in_img,out_img,cv::COLOR_RGB2GRAY);
+      cv::cvtColor(in_img,tmpimage1,cv::COLOR_RGB2GRAY);
 
     }
   else {
@@ -2097,7 +2097,7 @@ void DrawMatchingRegions3D(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Ma
       roiImg2.copyTo(roiImgResult_Right); //Img2 will be on the right of imgResult
       if (tmpimage1.channels() !=3)
         {
-          cv::cvtColor(tmpimage1,tmpimage1,CV_GRAY2RGB);
+          cv::cvtColor(tmpimage1,tmpimage1,cv::COLOR_RGB2GRAY);
         }
       std::vector<TentativeCorrespExt>::iterator ptrOut = matchings.TCList.begin();
 
@@ -2140,7 +2140,7 @@ void DrawMatchingRegions3D(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Ma
                     false, 			// draw closed contour (i.e. joint end to start)
                     color1,// colour RGB ordering (here = green)
                     r1, 		        // line thickness
-                    CV_AA, 0);
+                    cv::LINE_AA, 0);
           //1st inc
 #ifdef USE_SECOND_BAD
 
@@ -2160,7 +2160,7 @@ void DrawMatchingRegions3D(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Ma
                     false, 			// draw closed contour (i.e. joint end to start)
                     cv::Scalar(0,255,255),
                     r2, 		        // line thickness
-                    CV_AA, 0);
+                    cv::LINE_AA, 0);
           //2nd closest
           double A4[4]= {k_scale*ptrOut->secondbadby2ndcl.reproj_kp.s*ptrOut->secondbadby2ndcl.reproj_kp.a11, k_scale*ptrOut->secondbadby2ndcl.reproj_kp.s*ptrOut->secondbadby2ndcl.reproj_kp.a12,
                          k_scale*ptrOut->secondbadby2ndcl.reproj_kp.s*ptrOut->secondbadby2ndcl.reproj_kp.a21, k_scale*ptrOut->secondbadby2ndcl.reproj_kp.s*ptrOut->secondbadby2ndcl.reproj_kp.a22
@@ -2178,7 +2178,7 @@ void DrawMatchingRegions3D(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Ma
                     false, 			// draw closed contour (i.e. joint end to start)
                     cv::Scalar(0,0,255),
                     r2+1, 		        // line thickness
-                    CV_AA, 0);
+                    cv::LINE_AA, 0);
 #endif
 
           //Matched
@@ -2198,7 +2198,7 @@ void DrawMatchingRegions3D(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Ma
                     false, 			// draw closed contour (i.e. joint end to start)
                     color2,
                     r2, 		        // line thickness
-                    CV_AA, 0);
+                    cv::LINE_AA, 0);
           cv::circle(tmpimage1, cv::Point(int(ptrOut->first.reproj_kp.x),int(ptrOut->first.reproj_kp.y)),r1,color1,-1); //draw original points
           cv::circle(tmpimage1, cv::Point(int(xa),int(ya)),r2,color1,-1); //draw correpspondent point
           cv::line(tmpimage1,cv::Point(int(xa),int(ya)),cv::Point(int(ptrOut->first.reproj_kp.x),int(ptrOut->first.reproj_kp.y)), color2);
@@ -2229,7 +2229,7 @@ void DrawMatchingRegions3D(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Ma
       roiImg2.copyTo(roiImgResult_Down); //Img2 will be on the right of imgResult
 
       if (tmpimage1.channels() !=3) {
-          cv::cvtColor(tmpimage1,tmpimage1,CV_GRAY2RGB);
+          cv::cvtColor(tmpimage1,tmpimage1,cv::COLOR_RGB2GRAY);
         }
 
       std::vector<TentativeCorrespExt>::iterator ptrOut = matchings.TCList.begin();
@@ -2260,7 +2260,7 @@ void DrawMatchingRegions3D(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Ma
                     false, 			// draw closed contour (i.e. joint end to start)
                     color_corr,// colour RGB ordering (here = green)
                     r1, 		        // line thickness
-                    CV_AA, 0);
+                    cv::LINE_AA, 0);
           double A2[4]= {k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a11, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a12,
                          k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a21, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a22
                         };
@@ -2277,7 +2277,7 @@ void DrawMatchingRegions3D(const cv::Mat &in_img1,const cv::Mat &in_img2, cv::Ma
                     false, 			// draw closed contour (i.e. joint end to start)
                     color_corr,
                     r2, 		        // line thickness
-                    CV_AA, 0);
+                    cv::LINE_AA, 0);
           cv::circle(tmpimage1, cv::Point(int(ptrOut->first.reproj_kp.x),int(ptrOut->first.reproj_kp.y)),r1,color1,-1); //draw original points
           cv::circle(tmpimage1, cv::Point(int(xa),int(ya)),r2,color1,-1); //draw correpspondent point
           cv::line(tmpimage1,cv::Point(int(xa),int(ya)),cv::Point(int(ptrOut->first.reproj_kp.x),int(ptrOut->first.reproj_kp.y)), color_corr);
@@ -2297,8 +2297,8 @@ void DrawMatchingRegions(const cv::Mat &in_img, cv::Mat &out_img,const cv::Mat &
   //double *H = (double*)H1.data;
   cv::Mat tmpimage1;
   if (in_img.channels() !=3) {
-      cv::cvtColor(in_img,out_img,CV_GRAY2RGB);
-      cv::cvtColor(in_img,tmpimage1,CV_GRAY2RGB);
+      cv::cvtColor(in_img,out_img,cv::COLOR_RGB2GRAY);
+      cv::cvtColor(in_img,tmpimage1,cv::COLOR_RGB2GRAY);
     }
   else {
       out_img=in_img.clone();
@@ -2350,7 +2350,7 @@ void DrawMatchingRegions(const cv::Mat &in_img, cv::Mat &out_img,const cv::Mat &
                   false, 			// draw closed contour (i.e. joint end to start)
                   color1,// colour RGB ordering (here = green)
                   r1, 		        // line thickness
-                  CV_AA, 0);
+                  cv::LINE_AA, 0);
         double B[9]= {k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a11, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a12, ptrOut->second.reproj_kp.x,
                       k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a21, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a22, ptrOut->second.reproj_kp.y,
                       0, 0, 1
@@ -2371,7 +2371,7 @@ void DrawMatchingRegions(const cv::Mat &in_img, cv::Mat &out_img,const cv::Mat &
                   false, 			// draw closed contour (i.e. joint end to start)
                   color2,
                   r2, 		        // line thickness
-                  CV_AA, 0);
+                  cv::LINE_AA, 0);
 
       }
   else
@@ -2415,7 +2415,7 @@ void DrawMatchingRegions(const cv::Mat &in_img, cv::Mat &out_img,const cv::Mat &
                     false, 			// draw closed contour (i.e. joint end to start)
                     color1,// colour RGB ordering (here = green)
                     r1, 		        // line thickness
-                    CV_AA, 0);
+                    cv::LINE_AA, 0);
           double B[9]= {k_scale*ptrOut->first.reproj_kp.s*ptrOut->first.reproj_kp.a11, k_scale*ptrOut->first.reproj_kp.s*ptrOut->first.reproj_kp.a12, ptrOut->first.reproj_kp.x,
                         k_scale*ptrOut->first.reproj_kp.s*ptrOut->first.reproj_kp.a21, k_scale*ptrOut->first.reproj_kp.s*ptrOut->first.reproj_kp.a22, ptrOut->first.reproj_kp.y,
                         0, 0, 1
@@ -2436,7 +2436,7 @@ void DrawMatchingRegions(const cv::Mat &in_img, cv::Mat &out_img,const cv::Mat &
                     false, 			// draw closed contour (i.e. joint end to start)
                     color2,
                     r2, 		        // line thickness
-                    CV_AA, 0);
+                    cv::LINE_AA, 0);
 
         }
     }
@@ -2452,8 +2452,8 @@ void DrawChangedMatchingRegions(const cv::Mat &in_img, cv::Mat &out_img,const cv
   cv::Mat tmpimage1;
   if (in_img.channels() != 3)
     {
-      cv::cvtColor(in_img,out_img,CV_GRAY2RGB);
-      cv::cvtColor(in_img,tmpimage1,CV_GRAY2RGB);
+      cv::cvtColor(in_img,out_img,cv::COLOR_RGB2GRAY);
+      cv::cvtColor(in_img,tmpimage1,cv::COLOR_RGB2GRAY);
     }
   else {
       out_img = in_img.clone();
@@ -2510,7 +2510,7 @@ void DrawChangedMatchingRegions(const cv::Mat &in_img, cv::Mat &out_img,const cv
                   false, 			// draw closed contour (i.e. joint end to start)
                   color1,// colour RGB ordering (here = green)
                   r1, 		        // line thickness
-                  CV_AA, 0);
+                  cv::LINE_AA, 0);
 
         double B[9]= {k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a11, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a12, ptrOut->second.reproj_kp.x,
                       k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a21, k_scale*ptrOut->second.reproj_kp.s*ptrOut->second.reproj_kp.a22, ptrOut->second.reproj_kp.y,
@@ -2531,7 +2531,7 @@ void DrawChangedMatchingRegions(const cv::Mat &in_img, cv::Mat &out_img,const cv
                   false, 			// draw closed contour (i.e. joint end to start)
                   color2,
                   r2, 		        // line thickness
-                  CV_AA, 0);
+                  cv::LINE_AA, 0);
 
 
 
@@ -2557,7 +2557,7 @@ void DrawChangedMatchingRegions(const cv::Mat &in_img, cv::Mat &out_img,const cv
                   false, 			// draw closed contour (i.e. joint end to start)
                   color22,
                   r2+1, 		        // line thickness
-                  CV_AA, 0);
+                  cv::LINE_AA, 0);
 
         //second bad by 2nd closest
         const cv::Scalar color223 = cv::Scalar(0,0,255);
@@ -2580,7 +2580,7 @@ void DrawChangedMatchingRegions(const cv::Mat &in_img, cv::Mat &out_img,const cv
                   false, 			// draw closed contour (i.e. joint end to start)
                   color223,
                   r2, 		        // line thickness
-                  CV_AA, 0);
+                  cv::LINE_AA, 0);
         count++;
 
       }
