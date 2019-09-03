@@ -114,5 +114,6 @@ if __name__ == '__main__':
         message = socket.recv()
         img = decode_msg(message).astype(np.float32)
         descr = describe_patches(model, img, DO_CUDA =  args.cuda, DESCR_OUT_DIM = DESCR_OUT_DIM).astype(np.float32)
-        buff = np.getbuffer(descr)
+        #buff = np.getbuffer(descr)
+        buff = memoryview(descr)
         socket.send(buff)
