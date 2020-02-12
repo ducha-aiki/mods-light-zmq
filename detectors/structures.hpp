@@ -60,15 +60,15 @@ enum descriptor_type {DESC_SIFT = 0,
                       DESC_HALF_SIFT = 2,
                       DESC_HALF_ROOT_SIFT = 3,
                       DESC_INV_SIFT = 4,
-                      DESC_ZMQ = 6,
-                      DESC_CLI = 7,
-                      DESC_ORB = 8,
+                      DESC_TORCHSCRIPT = 5,
+                      DESC_CLI = 6,
+                      DESC_ORB = 7,
                       DESC_UNKNOWN = 1000};
 
 
 const std::string _DescriptorNames [] = {"SIFT", "RootSIFT",
                                      "HalfSIFT", "HalfRootSIFT",
-                                     "InvSIFT", "ZMQ",  "CLIDescriptor", "ORB"};
+                                     "InvSIFT", "TorchScript",  "CLIDescriptor", "ORB"};
 
 const std::vector<std::string> DescriptorNames (_DescriptorNames,_DescriptorNames +
                                               sizeof(_DescriptorNames)/sizeof(*_DescriptorNames));
@@ -109,6 +109,28 @@ struct zmqDescriptorParams
 
 /// Basic structures:
 
+struct torchscriptDescriptorParams
+
+{
+  int patchSize;
+  int batchSize;
+  double mrSize;
+  std::string path_to_model;
+  int maxOrientations;
+  bool estimateOrientation;
+  bool onGPU;
+  double orientTh;
+  PatchExtractionParams PEParam;
+  torchscriptDescriptorParams()
+  {
+
+    mrSize = 5.192;
+    patchSize = 32;
+    batchSize = 128;
+    estimateOrientation= true;
+    onGPU=false;
+  }
+};
 
 
 struct PyramidParams

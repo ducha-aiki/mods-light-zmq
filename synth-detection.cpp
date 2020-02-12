@@ -11,7 +11,7 @@
 
 #include <opencv2/features2d/features2d.hpp>
 #include "detectors/mser/extrema/extrema.h"
-
+#include <torch/script.h>
 //#define AREA_INTERP
 #ifdef _OPENMP
 #include <omp.h>
@@ -51,7 +51,7 @@ void ExtractPatchesColumn(const AffineRegionList &in_kp_list,
 
   if ( !fast_extraction) {
       for (unsigned int i = 0; i < n_descs; i++) {
-          cv::Mat currentROI = all_patches(Rect(0, i*patch.rows, patch.cols, patch.rows));
+          cv::Mat currentROI = all_patches(cv::Rect(0, i*patch.rows, patch.cols, patch.rows));
           float mrScale = ceil(in_kp_list[i].det_kp.s * mrSize); // half patch size in pixels of image
 
           int patchImageSize = patchSize % 2 != 0 ? 2 * int(mrScale) + 1 : 2 * int(mrScale); // odd size
@@ -107,7 +107,7 @@ void ExtractPatchesColumn(const AffineRegionList &in_kp_list,
       // patch size in the image / patch size -> amount of down/up sampling
 
       for (unsigned int i = 0; i < n_descs; i++) {
-          cv::Mat currentROI = all_patches(Rect(0, i*patch.rows, patch.cols, patch.rows));
+          cv::Mat currentROI = all_patches(cv::Rect(0, i*patch.rows, patch.cols, patch.rows));
           AffineRegion const_temp_region=in_kp_list[i];
 
           float curr_sc = imageToPatchScale*const_temp_region.det_kp.s;
@@ -128,6 +128,111 @@ void ExtractPatchesColumn(const AffineRegionList &in_kp_list,
     }
   patches = all_patches.clone();
 
+
+}
+
+void ExtractPatches2Tensor(const AffineRegionList &in_kp_list,
+                        const  SynthImage &img, torch::Tensor& patches,  double mrSize  ,
+                        int patchSize , bool fast_extraction , bool photoNorm , bool export_and_read, bool do_mask)
+//Describes region with SIFT or other descriptor
+{
+  std::vector<unsigned char> workspace;
+  // patch size in the image / patch size -> amount of down/up sampling
+  unsigned int n_descs = in_kp_list.size();
+  cv::Mat mask(patchSize,patchSize,CV_32F);
+  computeCircularGaussMask(mask);
+ // cv::Mat all_patches =  cv::Mat::zeros(patchSize * n_descs, patchSize, CV_32FC1);
+  cv::Mat patch(patchSize,patchSize,CV_32F);
+  std::vector<torch::Tensor> patches_list;
+
+  if ( !fast_extraction) {
+      for (unsigned int i = 0; i < n_descs; i++) {
+          float mrScale = ceil(in_kp_list[i].det_kp.s * mrSize); // half patch size in pixels of image
+
+          int patchImageSize = patchSize % 2 != 0 ? 2 * int(mrScale) + 1 : 2 * int(mrScale); // odd size
+          float imageToPatchScale = float(patchImageSize) / float(patchSize);  // patch size in the image / patch size -> amount of down/up sampling
+          // is patch touching boundary? if yes, ignore this feature
+          if (imageToPatchScale > 0.4) {
+              // the pixels in the image are 0.4 apart + the affine deformation
+              // leave +1 border for the bilinear interpolation
+              patchImageSize += 2;
+              size_t wss = patchImageSize * patchImageSize * sizeof(float);
+              if (wss >= workspace.size())
+                workspace.resize(wss);
+
+              Mat smoothed(patchImageSize, patchImageSize, CV_32FC1, (void *) &workspace.front());
+              // interpolate with det == 1
+              interpolate(img.pixels,
+                          (float) in_kp_list[i].det_kp.x,
+                          (float) in_kp_list[i].det_kp.y,
+                          (float) in_kp_list[i].det_kp.a11,
+                          (float) in_kp_list[i].det_kp.a12,
+                          (float) in_kp_list[i].det_kp.a21,
+                          (float) in_kp_list[i].det_kp.a22,
+                          smoothed);
+
+
+              gaussianBlurInplace(smoothed, 1.5f * imageToPatchScale);
+              // subsample with corresponding scale
+              int res =  interpolate(smoothed, (float) (patchImageSize  / 2 ), (float) (patchImageSize  /2 ),
+                                     imageToPatchScale, 0, 0, imageToPatchScale, patch);
+
+
+            } else {
+              // if imageToPatchScale is small (i.e. lot of oversampling), affine normalize without smoothing
+              interpolate(img.pixels,
+                          (float) in_kp_list[i].det_kp.x,
+                          (float) in_kp_list[i].det_kp.y,
+                          (float) in_kp_list[i].det_kp.a11 * imageToPatchScale,
+                          (float) in_kp_list[i].det_kp.a12 * imageToPatchScale,
+                          (float) in_kp_list[i].det_kp.a21 * imageToPatchScale,
+                          (float) in_kp_list[i].det_kp.a22 * imageToPatchScale,
+                          patch);
+
+            }
+          if (photoNorm) {
+              float mean, var;
+              photometricallyNormalize(patch, mask, mean, var);
+            }
+
+          torch::Tensor tensor_patch = torch::zeros({ patchSize, patchSize, 1 });
+          memcpy(tensor_patch.data_ptr(), patch.data, tensor_patch.numel() * sizeof(float));
+          tensor_patch = tensor_patch.permute({2,0,1});
+          patches_list.push_back(tensor_patch);
+        }
+    } else {
+      double mrScale = mrSize; // half patch size in pixels of image
+      int patchImageSize = patchSize % 2 != 0 ? 2 * int(mrScale) + 1 : 2 * int(mrScale); // odd size
+      double imageToPatchScale = double(patchImageSize) / (double)patchSize;
+      // patch size in the image / patch size -> amount of down/up sampling
+
+      for (unsigned int i = 0; i < n_descs; i++) {
+        //  cv::Mat currentROI = all_patches(cv::Rect(0, i*patch.rows, patch.cols, patch.rows));
+          AffineRegion const_temp_region=in_kp_list[i];
+
+          float curr_sc = imageToPatchScale*const_temp_region.det_kp.s;
+
+          interpolate(img.pixels,(float)const_temp_region.det_kp.x,
+                      (float)const_temp_region.det_kp.y,
+                      (float)const_temp_region.det_kp.a11*curr_sc,
+                      (float)const_temp_region.det_kp.a12*curr_sc,
+                      (float)const_temp_region.det_kp.a21*curr_sc,
+                      (float)const_temp_region.det_kp.a22*curr_sc,
+                      patch);
+
+          if (photoNorm) {
+              float mean, var;
+              photometricallyNormalize(patch, mask, mean, var);
+            }
+
+          torch::Tensor tensor_patch = torch::zeros({ patchSize, patchSize, 1 });
+          memcpy(tensor_patch.data_ptr(), patch.data, tensor_patch.numel() * sizeof(float));
+          tensor_patch = tensor_patch.permute({2,0,1});
+          patches_list.push_back(tensor_patch);
+
+        }
+    }
+  patches = torch::stack(torch::TensorList(patches_list));
 
 }
 
@@ -970,7 +1075,7 @@ int DetectOrientationExt(AffineRegionList &in_kp_list,
                                   k_sigma * in_kp_list[i].det_kp.s) ) {
           continue;
         }
-      cv::Mat currentROI = all_patches(Rect(0, i*patch.rows, patch.cols, patch.rows));
+      cv::Mat currentROI = all_patches(cv::Rect(0, i*patch.rows, patch.cols, patch.rows));
 
       interpolate(img.pixels,(float)const_temp_region.det_kp.x,
                   (float)const_temp_region.det_kp.y,

@@ -9,6 +9,7 @@
 #include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <torch/script.h>
 
 //
 #include <sys/time.h>
@@ -166,6 +167,10 @@ int DetectAffineShape(AffineRegionList &in_kp_list,
 void ExtractPatchesColumn(const AffineRegionList &in_kp_list,
                     const  SynthImage &img, cv::Mat& patches,  double mrSize = 3.0*sqrt(3.0),
                            int patchSize = 41, bool fast_extraction = false, bool photoNorm = false, bool export_and_read = true, bool do_mask = true);
+
+void ExtractPatches2Tensor(const AffineRegionList &in_kp_list,
+                        const  SynthImage &img, torch::Tensor& patches,  double mrSize = 3.0*sqrt(3.0),
+                        int patchSize = 32 , bool fast_extraction = false , bool photoNorm =false, bool export_and_read = true, bool do_mask=true);
 
 template <typename FuncType>
 void DescribeRegions(AffineRegionList &in_kp_list,

@@ -10,7 +10,7 @@ struct DominantOrientationParams {
   float threshold;
   bool addUpRight;
   bool halfSIFTMode;
-  bool useZMQ;
+  bool useTS;
   bool addMirrored;
   std::string  external_command;
   PatchExtractionParams PEParam;
@@ -19,7 +19,7 @@ struct DominantOrientationParams {
     threshold = 0.8;
     addUpRight = false;
     halfSIFTMode = false;
-    useZMQ = false;
+    useTS = false;
     addMirrored = false;
     external_command = "";
   }
@@ -46,7 +46,9 @@ struct DescriptorsParameters {
   SIFTDescriptorParams RootSIFTParam;
   SIFTDescriptorParams HalfSIFTParam;
   SIFTDescriptorParams HalfRootSIFTParam;
-  zmqDescriptorParams zmqDescParam;
+  //zmqDescriptorParams zmqDescParam;
+  torchscriptDescriptorParams torchDescParam;
+
 };
 
 #endif // DESCRIPTORS_PARAMETERS_HPP

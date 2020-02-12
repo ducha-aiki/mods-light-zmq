@@ -57,6 +57,7 @@ void GetDomOriPars(DominantOrientationParams &DomOriPars, INIReader &reader,cons
 void GetBaumbergPars(AffineShapeParams &pars, INIReader &reader,const char* section="AffineAdaptation");
 
 void GetZMQPars(zmqDescriptorParams &pars, INIReader &reader,const char* section="zmqDescriptor");
+void GetTorchScriptPars(torchscriptDescriptorParams &pars, INIReader &reader,const char* section="TorchScript");
 void GetMatchPars(MatchPars &pars, INIReader &reader, INIReader &iter_reader, const char* section="Matching");
 void GetSIFTDescPars(SIFTDescriptorParams &pars, INIReader &reader,const char* section="SIFTDescriptor");
 void GetRANSACPars(RANSACPars &pars, INIReader &reader,const char* section="RANSAC");

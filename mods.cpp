@@ -134,7 +134,7 @@ int main(int argc, char **argv)
     {
       long clahe_start = getMilliSecs();
 
-      Ptr<CLAHE> clahe = createCLAHE();
+      cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
       clahe->setClipLimit(4);
       cv::Mat img1_clahe, img2_clahe;
 
@@ -189,6 +189,67 @@ int main(int argc, char **argv)
   CorrespondenceBank Tentatives;
   std::map<std::string, TentativeCorrespListExt> tentatives, verified_coors;
 
+  std::map<std::string, torch::jit::script::Module> CNN_models;
+
+
+  try {
+    // Deserialize the ScriptModule from a file using torch::jit::load().
+    torch::jit::script::Module module = torch::jit::load(Config1.DetectorsPars.AffNetParam.path_to_model);
+
+    torch::DeviceType device_type;
+    if (Config1.DetectorsPars.AffNetParam.onGPU ) {
+      device_type = torch::kCUDA;
+    } else {
+      device_type = torch::kCPU;
+    }
+    torch::Device device(device_type);
+    module.to(device);
+    CNN_models["AffNet"] = module;
+  }
+  catch (const c10::Error& e) {
+    std::cerr << "error loading the Affnet model" <<Config1.DetectorsPars.AffNetParam.path_to_model <<  "\n";
+
+  }
+
+  try {
+    // Deserialize the ScriptModule from a file using torch::jit::load().
+    torch::jit::script::Module module = torch::jit::load(Config1.DetectorsPars.OriNetParam.path_to_model);
+    torch::DeviceType device_type;
+    if (Config1.DetectorsPars.OriNetParam.onGPU ) {
+      device_type = torch::kCUDA;
+    } else {
+      device_type = torch::kCPU;
+    }
+    torch::Device device(device_type);
+    module.to(device);
+    CNN_models["OriNet"] = module;
+  }
+  catch (const c10::Error& e) {
+    std::cerr << "error loading the OriNet model" <<Config1.DetectorsPars.OriNetParam.path_to_model <<  "\n";
+
+  }
+
+
+
+  try {
+    // Deserialize the ScriptModule from a file using torch::jit::load().
+    torch::jit::script::Module module = torch::jit::load(Config1.DescriptorPars.torchDescParam.path_to_model);
+    torch::DeviceType device_type;
+    if (Config1.DescriptorPars.torchDescParam.onGPU ) {
+      device_type = torch::kCUDA;
+    } else {
+      device_type = torch::kCPU;
+    }
+    torch::Device device(device_type);
+    module.to(device);
+    CNN_models["TorchScriptDescriptor"] = module;
+  }
+  catch (const c10::Error& e) {
+      std::cerr << "error loading the TorchScriptDescriptor model" <<Config1.DescriptorPars.torchDescParam.path_to_model <<  "\n";
+
+
+  }
+
   int final_step = 0;
   int curr_matches = 0;
 
@@ -240,12 +301,12 @@ int main(int argc, char **argv)
               ImgRep1.SynthDetectDescribeKeypoints(Config1.ItersParam[step],
                                                    Config1.DetectorsPars,
                                                    Config1.DescriptorPars,
-                                                   Config1.DomOriPars);
+                                                   Config1.DomOriPars, CNN_models);
 #pragma omp task
               ImgRep2.SynthDetectDescribeKeypoints(Config1.ItersParam[step],
                                                    Config1.DetectorsPars,
                                                    Config1.DescriptorPars,
-                                                   Config1.DomOriPars);
+                                                   Config1.DomOriPars, CNN_models);
             }
 #pragma omp taskwait
           }
@@ -456,7 +517,7 @@ int main(int argc, char **argv)
 
           cv::Mat h1cv(3,3,CV_64F,verified_coors["All"].H);
           cv::Mat h1inv(3,3,CV_64F);
-          cv::invert(h1cv,h1inv,DECOMP_LU);
+          cv::invert(h1cv,h1inv,cv::DECOMP_LU);
 
           DrawMatches(ImgRep1.OriginalImg,ImgRep2.OriginalImg,img_out1s,img_out2s,h1cv,verified_coors["All"],
               Config1.DrawParam.drawOnlyCenters,
@@ -485,7 +546,7 @@ int main(int argc, char **argv)
 
             cv::Mat h1cv(3,3,CV_64F,verified_coors["All"].H);
             cv::Mat h1inv(3,3,CV_64F);
-            cv::invert(h1cv,h1inv,DECOMP_LU);
+            cv::invert(h1cv,h1inv,cv::DECOMP_LU);
 
             img_out1s = DrawRegions(ImgRep1.OriginalImg,
                                     ImgRep1.GetAffineRegionVector("None", "All"),1,cv::Scalar(255,255,160));

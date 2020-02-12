@@ -51,8 +51,12 @@ struct DetectorsParameters
     ScaleSpaceDetectorParams HessParam;
     ScaleSpaceDetectorParams HarrParam;
     ScaleSpaceDetectorParams DoGParam;
-    zmqDescriptorParams AffNetParam;
-    zmqDescriptorParams OriNetParam;
+//    zmqDescriptorParams AffNetParam;
+//    zmqDescriptorParams OriNetParam;
+
+     torchscriptDescriptorParams AffNetParam;
+     torchscriptDescriptorParams OriNetParam;
+
     ReadAffsFromFileParams ReadAffsFromFileParam;
     AffineShapeParams BaumbergParam;
     ORBParams ORBParam;

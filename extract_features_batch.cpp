@@ -78,7 +78,68 @@ int main(int argc, char **argv)
   int VERB = Config1.OutputParam.verbose;
 
   ///
+  std::map<std::string, torch::jit::script::Module> CNN_models;
 
+  try {
+    // Deserialize the ScriptModule from a file using torch::jit::load().
+    torch::jit::script::Module module = torch::jit::load(Config1.DetectorsPars.AffNetParam.path_to_model);
+
+    torch::DeviceType device_type;
+    if (Config1.DetectorsPars.AffNetParam.onGPU ) {
+      device_type = torch::kCUDA;
+    } else {
+      device_type = torch::kCPU;
+    }
+    torch::Device device(device_type);
+    module.to(device);
+    CNN_models["AffNet"] = module;
+  }
+  catch (const c10::Error& e) {
+    std::cerr << "error loading the Affnet model" <<Config1.DetectorsPars.AffNetParam.path_to_model <<  "\n";
+
+  }
+
+
+
+
+  try {
+    // Deserialize the ScriptModule from a file using torch::jit::load().
+    torch::jit::script::Module module = torch::jit::load(Config1.DetectorsPars.OriNetParam.path_to_model);
+    torch::DeviceType device_type;
+    if (Config1.DetectorsPars.OriNetParam.onGPU ) {
+      device_type = torch::kCUDA;
+    } else {
+      device_type = torch::kCPU;
+    }
+    torch::Device device(device_type);
+    module.to(device);
+    CNN_models["OriNet"] = module;
+  }
+  catch (const c10::Error& e) {
+    std::cerr << "error loading the OriNet model" <<Config1.DetectorsPars.OriNetParam.path_to_model <<  "\n";
+
+  }
+
+
+
+  try {
+    // Deserialize the ScriptModule from a file using torch::jit::load().
+    torch::jit::script::Module module = torch::jit::load(Config1.DescriptorPars.torchDescParam.path_to_model);
+    torch::DeviceType device_type;
+    if (Config1.DescriptorPars.torchDescParam.onGPU ) {
+      device_type = torch::kCUDA;
+    } else {
+      device_type = torch::kCPU;
+    }
+    torch::Device device(device_type);
+    module.to(device);
+    CNN_models["TorchScriptDescriptor"] = module;
+  }
+  catch (const c10::Error& e) {
+      std::cerr << "error loading the TorchScriptDescriptor model" <<Config1.DescriptorPars.torchDescParam.path_to_model <<  "\n";
+
+
+  }
   std::vector<std::string> input_img_fnames;
   std::vector<std::string> output_fnames;
 
@@ -136,7 +197,7 @@ int main(int argc, char **argv)
       ImgRep1.SynthDetectDescribeKeypoints(Config1.ItersParam[0],
           Config1.DetectorsPars,
           Config1.DescriptorPars,
-          Config1.DomOriPars);
+          Config1.DomOriPars,CNN_models);
 
       TimeLog img1time = ImgRep1.GetTimeSpent();
       /// Writing images and logs

@@ -29,7 +29,7 @@ public:
   int GetRegionsNumber(std::string det_name = "All");
   int GetDescriptorsNumber(std::string desc_name = "All", std::string det_name = "All");
   cv::Mat GetDescriptorsMatByDetDesc(const std::string desc_name,const std::string det_name = "All");
-  cv::Mat GetDescriptorsMatByDetDesc(std::vector<Point2f> &coordinates,
+  cv::Mat GetDescriptorsMatByDetDesc(std::vector<cv::Point2f> &coordinates,
                                      const std::string desc_name,const std::string det_name = "All");
   AffineRegionVector GetAffineRegionVector(std::string desc_name, std::string det_name, std::vector<int> idxs);
   AffineRegionVector GetAffineRegionVector(std::string desc_name, std::string det_name);
@@ -37,7 +37,8 @@ public:
   void SynthDetectDescribeKeypoints (IterationViewsynthesisParam &synth_par,
                                      DetectorsParameters &det_par,
                                      DescriptorsParameters &desc_par,
-                                     DominantOrientationParams &dom_ori_par);
+                                     DominantOrientationParams &dom_ori_par,
+                                     std::map<std::string, torch::jit::script::Module> &CNN_models);
 
   void SynthDetectDescribeKeypointsBench (IterationViewsynthesisParam &synth_par,
                                           DetectorsParameters &det_par,

@@ -13,7 +13,7 @@
 #include <iostream>
 
 
-using namespace cv;
+//using namespace cv;
 using namespace std;
 
 struct ScaleSpaceDetectorParams
@@ -27,14 +27,14 @@ struct ScaleSpaceDetectorParams
 
 struct AffineDetector : public ScaleSpaceDetector, AffineShape, KeypointCallback, AffineShapeCallback, NormalizedPatchCallback
 {
-  const Mat image;
+  const cv::Mat image;
   vector<AffineKeypoint> keys;
   int g_numberOfPoints;
   int g_numberOfAffinePoints;
   int g_numberOfDescribedPoints;
 
 public:
-  AffineDetector(const Mat &image, const PyramidParams &par, const AffineShapeParams &ap) :
+  AffineDetector(const cv::Mat &image, const PyramidParams &par, const AffineShapeParams &ap) :
     ScaleSpaceDetector(par),
     AffineShape(ap),
     image(image)
@@ -44,7 +44,7 @@ public:
     this->setNormalizedPatchCallback(this);
   }
 
-  void onKeypointDetected(const Mat &blur, float x, float y, float s, float pixelDistance, int type, float response)
+  void onKeypointDetected(const cv::Mat &blur, float x, float y, float s, float pixelDistance, int type, float response)
   {
     g_numberOfPoints++;
     if (par.sampleFromImage) {
@@ -54,7 +54,7 @@ public:
       }
   }
   void onAffineShapeFound(
-      const Mat &blur, float x, float y, float s, float pixelDistance,
+      const cv::Mat &blur, float x, float y, float s, float pixelDistance,
       float a11, float a12, float a21, float a22,
       int type, float response, int iters)
   {
@@ -66,7 +66,7 @@ public:
   }
 
   void onNormalizedPatchAvailable(
-      const Mat &patch,
+      const cv::Mat &patch,
       float x, float y, float s,
       float a11, float a12, float a21, float a22,
       int type, float response)

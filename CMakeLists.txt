@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 PROJECT(MODS_NEW)
 
 add_definitions(-DA64)
-add_definitions(-std=c++11)
+add_definitions(-std=c++14)
 
 FIND_PACKAGE(OpenMP)
 if (OPENMP_FOUND)
@@ -31,12 +31,14 @@ endif (LAPACK_FOUND)
 SET(CMAKE_BUILD_TYPE "RELEASE")
 
 IF(CMAKE_COMPILER_IS_GNUCXX)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-strict-aliasing")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-strict-aliasing -fpermissive")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -Wno-write-strings")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -ansi")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ftree-vectorize -funroll-loops")
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
+find_package(Torch REQUIRED)
+include_directories(/home/old-ufo/dev/libtorch/libtorch/include/)
 
 add_subdirectory( ./inih)
 add_subdirectory( ./matutls)
@@ -46,6 +48,7 @@ add_subdirectory( ./detectors/mser )
 add_subdirectory( ./libMatch)
 add_subdirectory( ./libNumerics)
 add_subdirectory( ./cnpy)
+
 
 
 ####### DEGENSAC
@@ -92,18 +95,21 @@ include_directories(.)
 
 add_library(synth-detection ${synth-detection_srcs})
 
-TARGET_LINK_LIBRARIES(synth-detection matching mser affinedetectors helpers ${OpenCV_LIBS})
+TARGET_LINK_LIBRARIES(synth-detection matching mser affinedetectors helpers ${OpenCV_LIBS} "${TORCH_LIBRARIES}")
 
 
 add_executable(mods  mods.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
-TARGET_LINK_LIBRARIES(mods inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq cnpy)
+TARGET_LINK_LIBRARIES(mods inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq cnpy "${TORCH_LIBRARIES}")
+set_property(TARGET mods PROPERTY CXX_STANDARD 14)
 
 #add_executable(mods-with-mask  mods-with-mask.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
 #TARGET_LINK_LIBRARIES(mods-with-mask inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq cnpy)
 
 
 add_executable(extract_features extract_features.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
-TARGET_LINK_LIBRARIES(extract_features inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq cnpy)
+TARGET_LINK_LIBRARIES(extract_features inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq cnpy "${TORCH_LIBRARIES}")
+set_property(TARGET extract_features PROPERTY CXX_STANDARD 14)
 
 add_executable(extract_features_batch extract_features_batch.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
-TARGET_LINK_LIBRARIES(extract_features_batch inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq cnpy)
+TARGET_LINK_LIBRARIES(extract_features_batch inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq cnpy "${TORCH_LIBRARIES}")
+set_property(TARGET extract_features PROPERTY CXX_STANDARD 14)

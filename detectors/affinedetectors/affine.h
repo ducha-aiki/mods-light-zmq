@@ -49,7 +49,7 @@ struct AffineShapeParams
   AffineBaumbergMethod affBmbrgMethod;
   float affMeasRegion;
   std::string external_command;
-  bool useZMQ;
+  bool useTS;
 
   AffineShapeParams()
   {
@@ -62,7 +62,7 @@ struct AffineShapeParams
     doBaumberg = 1;
     affBmbrgMethod = AFF_BMBRG_SMM;
     affMeasRegion = 0.5;
-    useZMQ = false;
+    useTS = false;
     sampleFromImage = false;
   }
 };
