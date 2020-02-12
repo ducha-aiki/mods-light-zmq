@@ -1,9 +1,9 @@
-## MODS with external deep learning components
+## MODS with torchscript deep learning components
 
-This is [MODS](https://github.com/ducha-aiki/mods) version, which allows you using state-of-the-art deep descriptors like HardNet without linking MODS to any of deep learning library. 
-It contains very small number of detectors and descriptors implemented inside -- for easier compilation. 
-Instead it uses [zeromq](http://zeromq.org/) library for communication with separately run CNN daemons. 
-Examples with python [PyTorch](https://github.com/pytorch/pytorch) [AffNet](https://github.com/ducha-aiki/affnet) and [HardNet++](https://github.com/DagnyT/hardnet) descriptors is provided, but you can use any language and any DL package you like, just modify corresponding scripts.
+This is [MODS](https://github.com/ducha-aiki/mods) version, which allows you using state-of-the-art deep descriptors like HardNet via [LibTorch](https://pytorch.org/cppdocs/). 
+
+Examples come with JIT converted  [PyTorch](https://github.com/pytorch/pytorch) [AffNet](https://github.com/ducha-aiki/affnet) and [HardNet+](https://github.com/DagnyT/hardnet) descriptor. For conversion example see this [notebook](https://github.com/DagnyT/hardnet/blob/master/notebook/convert_HardNet_to_JIT.ipynb).
+
 
 ## How to compile MODS 
 
@@ -15,42 +15,30 @@ I expect, that you have already installed latest PyTorch (0.5)
  
 ## Image matching example
 
-Relevant config-files are: config_aff_ori_desc_zeromq.ini and iters_HessianZMQ.ini
+Relevant config-files are: config_aff_ori_desc_torchscript.ini and iters_HessianTS.ini
 With Hessian-[AffNet, OriNet](https://github.com/ducha-aiki/affnet) and [HardNet++](https://github.com/DagnyT/hardnet) 
 
-    ./run_zmq_servers.sh
 
-Wait until initialization on GPU is done and you see:
-
-    Extracting on GPU
-    Extracting on GPU
-    Extracting on GPU
 
 Now you can run matching:
 
-    ./mods imgs/graf1.png imgs/graf6.png out1_deep.jpg out2_deep.jpg k1.txt k2.txt m.txt l.log 0 0 abcd.txt config_aff_ori_desc_zeromq.ini iters_HessianZMQ.ini
+    ./mods imgs/graf1.png imgs/graf6.png out1_deep.jpg out2_deep.jpg k1.txt k2.txt m.txt l.log 0 0 abcd.txt config_aff_ori_desc_torchscript.ini iters_HessianTS.ini
     
-Expected output:
+Expected output (on weak mobile GPU GT940):
     
-    Maximum threads can be used: 4
+    Maximum threads can be used: 8
     View synthesis, detection and description...
     Iteration 0
     HessianAffine: 1 synthesis will be done.
-    ('processing', 0.07718610763549805, 1.6556436644250974e-05, ' per patch')
-    ('processing', 0.061591148376464844, 1.6110684900984786e-05, ' per patch')
-    ('processing', 0.07169699668884277, 1.5837640090312078e-05, ' per patch')
-    ('processing', 0.05922508239746094, 1.5873782470506817e-05, ' per patch')
-    ('processing', 0.1312699317932129, 3.1877108254787004e-05, ' per patch')
-    ('processing', 0.10080504417419434, 3.0019369914888128e-05, ' per patch')
     Matching ... 
     Matching ... 
-    3358 4118
-    264 tentatives found.
+    3352 4109
+    222 tentatives found.
     Duplicate filtering before RANSAC with threshold = 2 pixels.
-    254 unique tentatives left
+    216 unique tentatives left
     LO-RANSAC(homography) verification is used...
-    147 RANSAC correspondences got
-    147 true matches are identified in 0.003 seconds
+    122 RANSAC correspondences got
+    122 true matches are identified in 0.023 seconds
     Done in 1 iterations
     *********************
     Writing files... 
@@ -58,20 +46,20 @@ Expected output:
     HessianAffine 2
     Writing images with matches... done
     Image1: regions descriptors | Image2: regions descriptors 
-    3731 3358 | 4527 4118
+    3730 3352 | 4524 4109
 
     True matches | unique tentatives
-    147 | 254 | 57.9%  1st geom inc
+    122 | 216 | 56.5%  1st geom inc
 
     Main matching | All Time: 
-    2.02 | 2.52 seconds
+    5.44 | 6.08 seconds
     Timings: (sec/%) 
     Synth|Detect|Orient|Desc|Match|RANSAC|MISC|Total 
-    0.011 0.721 0.568 0.463 0.229 0.003 0.527 2.52
-    0.438 28.6 22.5 18.4 9.08 0.119 20.9 100
+    0.00778 1.16 0.919 1.43 0.228 0.023 2.32 6.08
+    0.128 19.1 15.1 23.5 3.75 0.378 38.1 100
 
 
-Don`t forget to kill server process after work done.
+
 
 Now run with classical HessianAffine(Baumberg) + RootSIFT:
 
@@ -82,19 +70,22 @@ Relevant config-files are: config_affori_classic.ini and iters_HessianSIFT.ini
     
 Expected output:
     
-    Maximum threads can be used: 4
+    Maximum threads can be used: 8
+    error loading the Affnet model
+    error loading the OriNet model
+    error loading the TorchScriptDescriptor model
     View synthesis, detection and description...
     Iteration 0
     HessianAffine: 1 synthesis will be done.
     Matching ... 
     Matching ... 
-    2331 2912
-    76 tentatives found.
+    2331 2909
+    70 tentatives found.
     Duplicate filtering before RANSAC with threshold = 2 pixels.
-    74 unique tentatives left
+    70 unique tentatives left
     LO-RANSAC(homography) verification is used...
-    21 RANSAC correspondences got
-    21 true matches are identified in 0.002 seconds
+    20 RANSAC correspondences got
+    20 true matches are identified in 0.019 seconds
     Done in 1 iterations
     *********************
     Writing files... 
@@ -102,17 +93,18 @@ Expected output:
     HessianAffine 2
     Writing images with matches... done
     Image1: regions descriptors | Image2: regions descriptors 
-    2665 2331 | 3287 2912
+    2665 2331 | 3285 2909
 
     True matches | unique tentatives
-    21 | 74 | 28.4%  1st geom inc
+    20 | 70 | 28.6%  1st geom inc
 
     Main matching | All Time: 
-    0.915 | 1.25 seconds
+    0.771 | 1.27 seconds
     Timings: (sec/%) 
     Synth|Detect|Orient|Desc|Match|RANSAC|MISC|Total 
-    0.0106 0.183 0.0771 0.439 0.169 0.002 0.37 1.25
-    0.85 14.6 6.16 35.1 13.5 0.16 29.6 100
+    0.0112 0.132 0.0606 0.348 0.157 0.019 0.545 1.27
+    0.881 10.4 4.76 27.3 12.3 1.49 42.8 100
+
 
 
 As you can see, deep descriptors are much better, although slower
@@ -131,41 +123,6 @@ Generate two text files, one with paths to the input images (one path per line) 
     
 
 Extracted features will be in output_features directory, in [OxAff-like](http://www.robots.ox.ac.uk/~vgg/research/affine/) format: x y a b c desc[128]
-
-## Descriptor daemon script structure
-
-It is simple python(might be any other language) script with following three main parts.
-See [desc_server.py](build/desc_server.py) for example.
-
-1)zeromq socket initialization: 
-
-
-      context = zmq.Context()
-      socket = context.socket(zmq.REP)
-      socket.bind("tcp://*:" + args.port)
-
-
-port number should be the same, as listening port in corresponding section of [config_aff_ori_desc_zeromq.ini](build/config_aff_ori_desc_zeromq.ini) file:
-
-    [zmqDescriptor]
-    port=tcp://localhost:5555
-    patchSize=32;  width and height of the patch
-    mrSize=5.1962 ;
-
-2)Waiting for input patches. Patches come as grayscale uint8 png image with size (ps * n_patches, ps), where ps is set in [config_aff_ori_desc_zeromq.ini](build/config_aff_ori_desc_zeromq.ini)
-
-
-    while True:
-        #  Wait for next request from client
-        message = socket.recv()
-        img = decode_msg(message).astype(np.float32)
-
-3)Getting descriptors and sending them back, as numpy float32 (num_patches,desc_dim) array.
-
-
-     descr = describe_patches(model, img, args.cuda, DESCR_OUT_DIM).astype(np.float32)
-     buff = np.getbuffer(descr)
-     socket.send(buff)
 
 ## Saving in .npz format
 Now you can save keypoints in .npz format. To do this, just pass k1.npz instead k1.txt in command line.
