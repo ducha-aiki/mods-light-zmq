@@ -325,7 +325,7 @@ int CorrespondenceBank::MatchImgReps(ImageRepresentation &imgrep1, ImageRepresen
               else
                 current_match_par.matchDistanceThreshold=0;
 
-	      std::cerr << "Matching ... " << std::endl;
+	      std::cerr << "Matching ... " << curr_desc  << std::endl;
 	      std::cerr << queries.size() << " " << trains.size() << std::endl;
               if (current_match_par.currMatchRatio > 0)
                 {
