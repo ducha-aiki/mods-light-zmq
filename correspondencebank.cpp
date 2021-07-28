@@ -237,8 +237,9 @@ int CorrespondenceBank::MatchImgReps(ImageRepresentation &imgrep1, ImageRepresen
 {
   unsigned int n_group_desc = WhatToMatchNow.group_descriptors.size();
   unsigned int n_sep_det = WhatToMatchNow.separate_detectors.size();
-  std::cerr << "Matching ... " << std::endl;
+  std::cerr << "Matching start" << std::endl;
   /// Grouped
+/*
 #ifdef _OPENMP
   omp_set_nested(1);
 #endif
@@ -283,6 +284,7 @@ int CorrespondenceBank::MatchImgReps(ImageRepresentation &imgrep1, ImageRepresen
       AddCorrespondences(current_tents,"Group",curr_desc);
 
     }
+*/
   ///Individual detectors
 //#pragma omp parallel for schedule (dynamic,1)
   for (unsigned int sdet = 0; sdet < n_sep_det; sdet++)
@@ -331,10 +333,12 @@ int CorrespondenceBank::MatchImgReps(ImageRepresentation &imgrep1, ImageRepresen
                 {
                     MatchFlannFGINN(queries,trains,current_tents,current_match_par);
                 }
-              if (current_match_par.matchDistanceThreshold > 0)
-                MatchFLANNDistance(queries,trains,current_tents,current_match_par);
+             // if (current_match_par.matchDistanceThreshold > 0)
+             //   MatchFLANNDistance(queries,trains,current_tents,current_match_par);
 
+	      std::cerr << "adding corrs " << curr_desc  << std::endl;
               AddCorrespondences(current_tents,curr_det,curr_desc);
+	      std::cerr << "Done adding" << std::endl;
             }
         }
     }
