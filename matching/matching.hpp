@@ -259,10 +259,10 @@ int MatchKeypoints(std::vector< std::map<std::string, AffineRegionList> > &list1
 cv::flann::Index GenFLANNIndex(cv::Mat keys, cvflann::flann_algorithm_t indexType, cvflann::flann_distance_t dist_type, const int nTrees = 4);
 
 int MatchFlannFGINN(const AffineRegionList &list1, const AffineRegionList &list2,
-                  TentativeCorrespListExt &corresp,const MatchPars &par, const int nn=50);
+                  TentativeCorrespListExt &corresp,const MatchPars &par, const int nn=10);
 
 int MatchFLANNDistance(const AffineRegionList &list1, const AffineRegionList &list2,
-                  TentativeCorrespListExt &corresp,const MatchPars &par, const int nn=50);
+                  TentativeCorrespListExt &corresp,const MatchPars &par, const int nn=10);
 
 int LORANSACFiltering(TentativeCorrespListExt &in_corresp,
                       TentativeCorrespListExt &out_corresp, double *H,
