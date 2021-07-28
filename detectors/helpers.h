@@ -9,8 +9,9 @@
 
 #ifndef __HELPERS_H__
 #define __HELPERS_H__
-
-#include <opencv2/core/core.hpp>
+#include <initializer_list>
+//#include "/usr/local/include/opencv4/opencv2/core.hpp"
+#include <opencv2/opencv2/core.hpp>
 #include "structures.hpp"
 
 void solveLinear3x3(float *A, float *b);

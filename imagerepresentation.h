@@ -10,7 +10,7 @@
 #include "detectors/detectors_parameters.hpp"
 #include "descriptors_parameters.hpp"
 
-#include <zmq.hpp>
+//#include <zmq.hpp>
 
 class ImageRepresentation
 {

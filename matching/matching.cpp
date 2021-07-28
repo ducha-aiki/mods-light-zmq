@@ -10,7 +10,8 @@
 #include "ranF.h"
 //#include "rtools.h"
 //#include "Htools.h"
-
+#define CV_GRAY2RGB cv::COLOR_GRAY2RGB 
+#define CV_AA cv::LINE_AA
 #include "matching.hpp"
 
 #include <opencv2/core/core.hpp>

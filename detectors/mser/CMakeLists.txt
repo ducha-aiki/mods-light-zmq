@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(MSER_Detector)
-
+add_definitions(-DA64)
 IF(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-strict-aliasing")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -Wno-write-strings")
@@ -32,5 +32,5 @@ include_directories(.
 ./LL)
 
 add_library(mser ${mser_srcs})
-TARGET_LINK_LIBRARIES(mser ${OpenCV_LIBS} rt)
+TARGET_LINK_LIBRARIES(mser ${OpenCV_LIBS})
 

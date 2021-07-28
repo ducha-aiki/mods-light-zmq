@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <math.h>
+#include <time.h>
 #include "../matutls/matutl.h"
 #include "utools.h"
 #include "lapwrap.h"

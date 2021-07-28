@@ -11,7 +11,7 @@
 #include <iterator>
 
 #define VERBOSE 1
-#include <zmq.hpp>
+//#include <zmq.hpp>
 
 
 inline static bool endsWith(const std::string& str, const std::string& suffix)
@@ -43,7 +43,7 @@ std::vector<std::vector<float> > DescribeWithZmq(zmqDescriptorParams par,
 
           std::vector<uchar> bufff1;
           cv::imencode(".png",patches,bufff1);
-
+/*
           zmq::context_t context (1);
           int socket_mode = ZMQ_REQ;
 
@@ -74,7 +74,8 @@ std::vector<std::vector<float> > DescribeWithZmq(zmqDescriptorParams par,
               out.push_back(curr_desc);
             }
           socket.close();
-        }
+*/  
+      }
     } else {
       int num_batches = (kp_size / batch_size) + 1;
       AffineRegionVector::const_iterator startIter(kps.cbegin());
@@ -1306,11 +1307,11 @@ void ImageRepresentation::SaveRegionsNPZ(std::string fname) {
         }
     }
 
-  cnpy::npz_save(fname,"xy",&xy[0],{num_desc_dets,2},"w"); //"w" overwrites any existing file
-  cnpy::npz_save(fname,"scales",&scales[0],{num_desc_dets,1},"a"); //"a" appends to the file we created above
-  cnpy::npz_save(fname,"responses",&responses[0],{num_desc_dets,1},"a"); //"a" appends to the file we created above
-  cnpy::npz_save(fname,"A",&A[0],{num_desc_dets,4},"a"); //"a" appends to the file we created above
-  cnpy::npz_save(fname,"descs",&descs[0],{num_desc_dets,desc_dim},"a"); //"a" appends to the file we created above
+//  cnpy::npz_save(fname,"xy",&xy[0],{num_desc_dets,2},"w"); //"w" overwrites any existing file
+//  cnpy::npz_save(fname,"scales",&scales[0],{num_desc_dets,1},"a"); //"a" appends to the file we created above
+//  cnpy::npz_save(fname,"responses",&responses[0],{num_desc_dets,1},"a"); //"a" appends to the file we created above
+//  cnpy::npz_save(fname,"A",&A[0],{num_desc_dets,4},"a"); //"a" appends to the file we created above
+//  cnpy::npz_save(fname,"descs",&descs[0],{num_desc_dets,desc_dim},"a"); //"a" appends to the file we created above
 
 
 }

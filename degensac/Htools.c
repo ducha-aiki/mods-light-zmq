@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
 #include <memory.h>
-
+#include <stdio.h>
 #include "lapwrap.h"
 #include "../matutls/matutl.h"
 #include "utools.h"

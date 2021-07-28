@@ -1,4 +1,5 @@
-#undef __STRICT_ANSI__
+//#undef __STRICT_ANSI__
+
 #include "DegUtils.h"
 #include "rtools.h"
 #include "Htools.h"
@@ -12,7 +13,7 @@
 #include <math.h>
 //#include <mex.h>
 #include <time.h>
-
+#include <matutls/ccmath.h>
 /*function [deg, H, inl] = checksample(F, u7, th)
 
 %checksample tests for the degeneracy of 7pt sample

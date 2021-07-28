@@ -2,7 +2,7 @@
 ////#include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
-
+#include <matutls/ccmath.h>
 #include "exp_ranF.h"
 #include "DegUtils.h"
 #include "hash.h"
@@ -12,7 +12,7 @@
 #include "../matutls/matutl.h"
 #include <time.h>
 //#include <mex.h>
-
+#define CV_BGR2GRAY cv::COLOR_BGR2GRAY 
 #define CHECK_ORIG(inl,orig) 1
 //#define CHECK_ORIG(inl,orig) (inl[orig[0]] && inl[orig[1]] && inl[orig[2]] && inl[orig[3]] && inl[orig[4]] && inl[orig[5]] && inl[orig[6]]) //to be used only with DegenSAC
 
@@ -928,7 +928,7 @@ int exp_ransacFcustom(double *u, int len, double th, double conf, int max_sam,
                   FDsSym(u, f, d_check, len);
                   Scheck.I = 0;
                   bad_model = 0;
-                  int SI_min = (int) floor(SYMM_COEF*S.I);
+                  int SI_min = (int)(SYMM_COEF*S.I);
                   double th_check =  CHECK_COEF*th;
                   for (j = 0; j < len; j++)
                     if (d_check[j] <= th_check) Scheck.I++;
