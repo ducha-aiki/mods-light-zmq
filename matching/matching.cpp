@@ -456,6 +456,7 @@ int MatchFlannFGINN(const AffineRegionList &list1, const AffineRegionList &list2
             }
         }
     }
+  std::cout << "filtering done" << std::endl;
   return matches;
 }
 int MatchFlannFGINNPlusDB(const AffineRegionList &list1, const AffineRegionList &list2, TentativeCorrespListExt &corresp,const MatchPars &par, cv::Mat *DB, const int nn)
