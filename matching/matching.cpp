@@ -390,8 +390,9 @@ int MatchFlannFGINN(const AffineRegionList &list1, const AffineRegionList &list2
 
 
   cv::flann::SearchParams SearchParams1(par.knn_checks);
+  std::cout << "startging knn search" << std::endl;
   tree.knnSearch(keys1, indices, dists, nn, SearchParams1);
-
+  std::cout << "knn search done" << std::endl;
   if (sqminratio >= 1.0) //to get all points (for example, for calculating PDF)
     {
       for (i=0; i< list1.size(); i++)
