@@ -4,7 +4,7 @@
 #include <limits.h>
 
 
-#include "../matutls/matutl.h"
+#include "matutls/matutl.h"
 #include "utools.h"
 #include "Ftools.h"
 

@@ -1,11 +1,13 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 
 PROJECT(MODS_NEW)
 
 add_definitions(-DA64)
-add_definitions(-Werror=implicit-function-declaration)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+#add_definitions(-Werror=implicit-function-declaration)
+add_definitions(-fPIC)
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 FIND_PACKAGE(OpenMP)
 if (OPENMP_FOUND)
@@ -32,7 +34,6 @@ endif (LAPACK_FOUND)
 
 find_package(cppzmq)
 
-SET(CMAKE_BUILD_TYPE "RELEASE")
 
 IF(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-strict-aliasing")
@@ -43,7 +44,6 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 
 add_subdirectory( ./inih)
-add_subdirectory( ./matutls)
 add_subdirectory( ./detectors)
 add_subdirectory( ./detectors/affinedetectors)
 add_subdirectory( ./detectors/mser )
@@ -53,25 +53,8 @@ add_subdirectory( ./cnpy)
 
 
 ####### DEGENSAC
-include_directories(
-.
-./degensac)
-set(degensac_srcs
-        degensac/DegUtils.c
-        degensac/exp_ranF.c
-        degensac/exp_ranH.c
-        degensac/Ftools.c
-        degensac/hash.c
-        degensac/Htools.c
-        degensac/ranF.c
-        degensac/ranH2el.c
-        degensac/ranH.c
-        degensac/rtools.c
-        degensac/utools.c
-        degensac/lapwrap.c
-)
-add_library(degensac ${degensac_srcs})
-TARGET_LINK_LIBRARIES(degensac matutls ${LAPACK_LIBRARIES})
+add_subdirectory( ./degensac)
+
 ##### End of DEGENSAC
 
 ###################Matching
@@ -85,7 +68,7 @@ set(matching_srcs
         orsa.cpp
 )
 add_library(matching ${matching_srcs})
-TARGET_LINK_LIBRARIES(matching ${OpenCV_LIBS} degensac ${LAPACK_LIBRARIES} Match Numerics)
+TARGET_LINK_LIBRARIES(matching  ${OpenCV_LIBS} degensac matutls ${LAPACK_LIBRARIES} Match Numerics)
 
 ################## View synthesis
 
@@ -96,18 +79,18 @@ include_directories(.)
 
 add_library(synth-detection ${synth-detection_srcs})
 
-TARGET_LINK_LIBRARIES(synth-detection matching mser affinedetectors helpers ${OpenCV_LIBS})
+TARGET_LINK_LIBRARIES(synth-detection  matching mser affinedetectors helpers ${OpenCV_LIBS} degensac matutls)
 
 
 add_executable(mods  mods.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
-TARGET_LINK_LIBRARIES(mods inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} cppzmq cnpy)
+TARGET_LINK_LIBRARIES(mods  inih  synth-detection mser affinedetectors ${OpenCV_LIBS} cppzmq cnpy  )
 
 #add_executable(mods-with-mask  mods-with-mask.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
 #TARGET_LINK_LIBRARIES(mods-with-mask inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} cppzmq cnpy)
 
 
-add_executable(extract_features extract_features.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
-TARGET_LINK_LIBRARIES(extract_features inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} cppzmq cnpy)
+#add_executable(extract_features extract_features.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
+#TARGET_LINK_LIBRARIES(extract_features inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} cppzmq cnpy)
 
-add_executable(extract_features_batch extract_features_batch.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
-TARGET_LINK_LIBRARIES(extract_features_batch inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} cppzmq cnpy)
+#add_executable(extract_features_batch extract_features_batch.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
+#TARGET_LINK_LIBRARIES(extract_features_batch inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} cppzmq cnpy)

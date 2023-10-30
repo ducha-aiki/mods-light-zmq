@@ -9,7 +9,7 @@
 #include "Ftools.h"
 #include "rtools.h"
 #include "utools.h"
-#include "../matutls/matutl.h"
+#include "matutls/matutl.h"
 #include <time.h>
 #include <math.h>
 //#include <mex.h>

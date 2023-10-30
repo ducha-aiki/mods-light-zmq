@@ -64,6 +64,7 @@ Score exp_iterFcustom(double *u, int len, int *inliers, int * inl2, double th, d
 Score exp_inFranicustom (double *u, int len, int *inliers, int ninl,
              double th, double **errs, double *buffer,
              double *F, int * samidx, int * iterID, unsigned inlLimit, double *resids,exFDsPtr EXFDS1,FDsPtr FDS1);
+
 #ifdef __cplusplus
 extern "C"
 #endif

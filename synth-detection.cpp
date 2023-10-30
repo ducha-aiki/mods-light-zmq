@@ -625,6 +625,7 @@ int ReprojectRegionsBackReal(AffineRegionList &keypoints, double *H, const int w
         }
     }
   keypoints = reproj_keypoints;
+  return (int) keypoints.size();
 }
 
 int ReprojectRegions(AffineRegionList &keypoints, double *H, int orig_w, int orig_h) {
@@ -1395,6 +1396,7 @@ int DetectAffineShape(AffineRegionList &in_kp_list,
             }
         }
     }
+     return (int) out_kp_list.size();
 }
 
 void WriteKPs(AffineRegionList &keys, std::ostream &out1)

@@ -12,7 +12,7 @@
 #include <math.h>
 //#include <mex.h>
 #include <time.h>
-#include <matutls/ccmath.h>
+#include "matutls/ccmath.h"
 
 /*function [deg, H, inl] = checksample(F, u7, th)
 

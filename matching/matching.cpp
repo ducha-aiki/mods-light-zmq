@@ -2,12 +2,13 @@
 /* Copyright 2013, Dmytro Mishkin  ducha.aiki@gmail.com */
 /*------------------------------------------------------*/
 
-#undef __STRICT_ANSI__
+//#undef __STRICT_ANSI__
 
+#include <stdexcept>
 #include "../degensac/exp_ranF.h"
 #include "../degensac/exp_ranH.h"
-#include "ranH.h"
-#include "ranF.h"
+#include "../degensac/ranH.h"
+#include "../degensac/ranF.h"
 //#include "rtools.h"
 //#include "Htools.h"
 
@@ -717,7 +718,9 @@ int LORANSACFiltering(TentativeCorrespListExt &in_corresp, TentativeCorrespListE
       int I_H = 0;
       int *Ihptr = &I_H;
       double HinF [3*3];
+       cout << "Going into C" << endl;
       exp_ransacFcustom(u2,tent_size, pars.err_threshold*pars.err_threshold,pars.confidence,pars.max_samples,Hloran,inl2,data_out,do_lo,0,&resids, HinF,Ihptr,EXFDS1,FDS1, pars.doSymmCheck);
+       cout << "Returned into C" << endl;
       free(resids);
       free(data_out);
       // if (VERB) std::cout << "Inliers in homography inside = " << I_H << std::endl;

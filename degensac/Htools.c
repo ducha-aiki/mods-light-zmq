@@ -3,11 +3,13 @@
 #include <memory.h>
 
 #include "lapwrap.h"
-#include "../matutls/matutl.h"
+#include "matutls/matutl.h"
 #include "utools.h"
 #include "rtools.h"
+#include <stdio.h>
 
 #include "Htools.h"
+#include "math.h"
 
 #ifndef MAX
 #define MAX(i,j) ( (i)<(j) ? (j):(i) )
