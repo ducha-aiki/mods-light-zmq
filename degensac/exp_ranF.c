@@ -11,37 +11,47 @@
 #include "utools.h"
 #include "../matutls/matutl.h"
 #include <time.h>
+#include <math.h>
 //#include <mex.h>
 
 #define CHECK_ORIG(inl,orig) 1
 //#define CHECK_ORIG(inl,orig) (inl[orig[0]] && inl[orig[1]] && inl[orig[2]] && inl[orig[3]] && inl[orig[4]] && inl[orig[5]] && inl[orig[6]]) //to be used only with DegenSAC
 
-#define CHECK_COEF 4.0
+#define CHECK_COEF 16.0
 #define SYMM_COEF 0.6
 #define __HASHING__
 
 #ifdef __linux__
-#include<sys/time.h>
+#include <sys/time.h>
 /*microseconds*/
 /*static __inline__*/ unsigned getticks(void) {
-  unsigned s, us;
-  struct timeval tv;
-  gettimeofday(&tv, 0);
-  s = tv.tv_sec;
-  us = tv.tv_usec;
-  return (s%10)*1000*1000 + us;
+    unsigned s, us;
+    struct timeval tv;
+    gettimeofday(&tv, 0);
+    s = tv.tv_sec;
+    us = tv.tv_usec;
+    return (s%10)*1000*1000 + us;
 }
 #endif /*__linux__*/
 
+#define min(a,b) \
+    ({ __typeof__ (a) _a = (a); \
+    __typeof__ (b) _b = (b); \
+    _a < _b ? _a : _b; })
+
+#define max(a,b) \
+    ({ __typeof__ (a) _a = (a); \
+    __typeof__ (b) _b = (b); \
+    _a > _b ? _a : _b; })
 
 int no_mto(double *A)
 {
-  double x,y;
-  int i,j;
-  int pts_ok = 1;
-  for (i=0;i<7;i++)
-    for (j=i+1;j<7;j++)
-      pts_ok = 0;//()
+    double x,y;
+    int i,j;
+    int pts_ok = 1;
+    for (i=0;i<7;i++)
+        for (j=i+1;j<7;j++)
+            pts_ok = 0;//()
 }
 
 

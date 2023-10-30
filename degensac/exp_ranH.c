@@ -7,7 +7,7 @@
 #include "lapwrap.h"
 #include "rtools.h"
 #include "hash.h"
-
+#include <time.h>
 
 #include "exp_ranH.h"
 #define CHECK_COEF 9.0 //3*3

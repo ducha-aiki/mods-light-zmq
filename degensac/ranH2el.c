@@ -4,7 +4,7 @@
 #include <memory.h>
 #include "lapwrap.h"
 /*#include <mex.h> */
-
+#include <matutls/ccmath.h>
 #include "../matutls/matutl.h"
 #include "Htools.h"
 #include "rtools.h"

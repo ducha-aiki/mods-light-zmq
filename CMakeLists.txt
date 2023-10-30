@@ -3,7 +3,9 @@ cmake_minimum_required(VERSION 2.8)
 PROJECT(MODS_NEW)
 
 add_definitions(-DA64)
-add_definitions(-std=c++11)
+add_definitions(-Werror=implicit-function-declaration)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
 
 FIND_PACKAGE(OpenMP)
 if (OPENMP_FOUND)
@@ -13,11 +15,11 @@ if (OPENMP_FOUND)
 endif (OPENMP_FOUND)
 
 message("Looking for OpenCV")
-FIND_PACKAGE(OpenCV 2.4.9 REQUIRED )
+FIND_PACKAGE(OpenCV REQUIRED )
 if (OpenCV_FOUND)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenCV_CXX_FLAGS}")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenCV_CXX_FLAGS}")
-  include_directories(${OpenCV_INDLUDE_DIRS})
+  include_directories(${OpenCV_INCLUDE_DIRS})
 else(OpenCV_FOUND)
   message("OpenCV not found!")
 endif (OpenCV_FOUND)
@@ -27,6 +29,8 @@ FIND_PACKAGE(LAPACK REQUIRED)
 if (LAPACK_FOUND)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LAPACK_CXX_FLAGS}")
 endif (LAPACK_FOUND)
+
+find_package(cppzmq)
 
 SET(CMAKE_BUILD_TYPE "RELEASE")
 
@@ -96,14 +100,14 @@ TARGET_LINK_LIBRARIES(synth-detection matching mser affinedetectors helpers ${Op
 
 
 add_executable(mods  mods.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
-TARGET_LINK_LIBRARIES(mods inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq cnpy)
+TARGET_LINK_LIBRARIES(mods inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} cppzmq cnpy)
 
 #add_executable(mods-with-mask  mods-with-mask.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
-#TARGET_LINK_LIBRARIES(mods-with-mask inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq cnpy)
+#TARGET_LINK_LIBRARIES(mods-with-mask inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} cppzmq cnpy)
 
 
 add_executable(extract_features extract_features.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
-TARGET_LINK_LIBRARIES(extract_features inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq cnpy)
+TARGET_LINK_LIBRARIES(extract_features inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} cppzmq cnpy)
 
 add_executable(extract_features_batch extract_features_batch.cpp correspondencebank.cpp imagerepresentation.cpp io_mods.cpp)
-TARGET_LINK_LIBRARIES(extract_features_batch inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} zmq cnpy)
+TARGET_LINK_LIBRARIES(extract_features_batch inih matching synth-detection mser affinedetectors ${OpenCV_LIBS} cppzmq cnpy)

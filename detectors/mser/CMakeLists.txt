@@ -32,5 +32,5 @@ include_directories(.
 ./LL)
 
 add_library(mser ${mser_srcs})
-TARGET_LINK_LIBRARIES(mser ${OpenCV_LIBS} rt)
+TARGET_LINK_LIBRARIES(mser ${OpenCV_LIBS})
 

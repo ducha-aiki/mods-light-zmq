@@ -1256,16 +1256,16 @@ void ImageRepresentation::SaveRegions(std::string fname, int mode) {
 
 void ImageRepresentation::SaveRegionsNPZ(std::string fname) {
 
-  int desc_dim = -1;
+  unsigned long desc_dim = 0;
 
-  int num_desc_dets = 0;
+  unsigned long num_desc_dets = 0;
   for (std::map<std::string, AffineRegionVectorMap>::const_iterator
        reg_it = RegionVectorMap.begin(); reg_it != RegionVectorMap.end();  ++reg_it) {
       for (AffineRegionVectorMap::const_iterator desc_it = reg_it->second.begin();
            desc_it != reg_it->second.end(); ++desc_it) {
           if (desc_it->first == "None") continue;
           num_desc_dets+=desc_it->second.size();
-          if (desc_dim == -1){
+          if (desc_dim == 0){
               desc_dim = desc_it->second[0].desc.vec.size();
             }
           assert (desc_dim ==desc_it->second[0].desc.vec.size() );

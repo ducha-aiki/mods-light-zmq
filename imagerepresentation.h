@@ -12,6 +12,7 @@
 
 #include <zmq.hpp>
 
+
 class ImageRepresentation
 {
 public:
